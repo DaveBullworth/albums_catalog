@@ -1,0 +1,101 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700&display=swap');
+
+body {
+    font-family: 'Space Grotesk', sans-serif;
+}
+
+.card-wrapper {
+    margin: 0 0 10px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 1px 4px 0 #666;
+    border-radius: 5px;
+}
+
+.card {
+    display: flex;
+    flex-direction: row;
+    justify-content: space between;
+    align-items: center;
+    border: 1px solid #ccc;
+    position: relative;
+    cursor: pointer;
+}
+
+.card-wrapper .ink {
+    position: absolute;
+    background-color: rgba(204, 204, 204, 0.7);
+    border-radius: 50%;
+    transform: scale(0);
+    animation: ripple 0.65s linear;
+    pointer-events: none;
+}
+
+@keyframes ripple {
+    to {
+        opacity: 0;
+        transform: scale(3);
+    }
+}
+
+/* Стили для каждого блока */
+.block {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+/* Первый блок */
+.block:nth-child(1) {
+    flex: 1; 
+    min-width: 40px; 
+    max-width: 70px; 
+}
+
+/* Второй блок */
+.block:nth-child(2) {
+    flex: 1; 
+    min-width: 50px;
+    max-width: 120px; 
+}
+
+/* Третий блок */
+.block:nth-child(3) {
+    flex: 2; 
+    min-width: 180px; 
+    align-items: flex-start;
+    margin-left: 1em;
+}
+
+/* Четвертый блок */
+.block:nth-child(4) {
+    flex: 1;
+    min-width: 60px; 
+    max-width: 60px;
+}
+
+/* Пятый блок */
+.block:nth-child(5) {
+    flex: 1; 
+    min-width: 50px; 
+    max-width: 80px; 
+    row-gap: 5px;
+}
+
+.year, .albumName {
+    font-weight: bold;
+    font-size: 1.4em; 
+}
+
+.number, .bandName {
+    font-size: 1.2em;
+}
+
+.card.expanded .bi-triangle-fill.rotate {
+    transform: rotate(180deg);
+}
+
+.card .bi-triangle-fill {
+    transition: transform 0.5s ease;
+}

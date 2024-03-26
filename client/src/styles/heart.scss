@@ -1,0 +1,233 @@
+* {
+	border: 0;
+	box-sizing: border-box;
+	margin: 0;
+	padding: 0;
+}
+
+$hue: 223;
+$heartHue: 38;
+
+:root {
+	--bg: #{hsl($hue,10%,90%)};
+	--fg: #{hsl($hue,10%,10%)};
+	--primary: #{hsl($hue,90%,55%)};
+	--red: #d9534f; 
+	--red-t: rgba(217, 83, 79, 0); 
+	--bezier: cubic-bezier(0.42,0,0.58,1);
+	--trans-dur: 0.3s;
+}
+body {
+	background-color: var(--bg);
+	color: var(--fg);
+	font: 1em/1.5 "DM Sans", sans-serif;
+	display: flex;
+	height: 100vh;
+	transition:
+		background-color var(--trans-dur),
+		color var(--trans-dur);
+}
+
+.rating {
+	margin: auto;
+
+	&__display {
+		font-size: 1em;
+		font-weight: 500;
+		min-height: 1.25em;
+		position: absolute;
+		top: 100%;
+		width: 100%;
+		text-align: center;
+	}
+	&__hearts {
+		display: flex;
+		&[data-affiliation='album'] {
+			padding-bottom: 0.375em;
+		}
+		position: relative;
+	}
+	&__heart {
+		display: block;
+		overflow: visible;
+		pointer-events: none;
+		width: 2em;
+		height: 2em;
+
+		&-ring,
+		&-fill,
+		&-line,
+		&-stroke {
+			animation-duration: 1s;
+			animation-timing-function: ease-in-out;
+			animation-fill-mode: forwards;
+		}
+		&-ring,
+		&-fill,
+		&-line {
+			stroke: var(--red);
+		}
+		&-fill {
+			fill: var(--red);
+			transform: scale(0);
+			transition:
+				fill var(--trans-dur) var(--bezier),
+				transform var(--trans-dur) var(--bezier);
+		}
+		&-line {
+			stroke-dasharray: 12 13;
+			stroke-dashoffset: -13;
+		}
+		&-stroke {
+			stroke: hsl($hue,10%,80%);
+			transition: stroke var(--trans-dur);
+		}
+	}
+	&__label {
+		cursor: pointer;
+		padding: 0.125em;
+		width: max-content;
+		margin-right: 6px;
+	}
+	@for $s from 1 through 4 {
+		&__label--delay#{$s} &__heart-ring,
+		&__label--delay#{$s} &__heart-fill,
+		&__label--delay#{$s} &__heart-line,
+		&__label--delay#{$s} &__heart-stroke {
+			animation-delay: 0.05s * $s;
+		}
+	}
+	&__input {
+		position: absolute;
+		-webkit-appearance: none;
+		appearance: none;
+	}
+	// display
+	&__input:hover ~ [data-rating]:not([hidden]) {
+		display: none;
+	}
+
+	&__input-1:hover ~ [data-rating="1"][hidden],
+	&__input:checked:hover ~ [data-rating]:not([hidden]) {
+		display: block;
+	}
+	// hearts
+	&__input-1:hover ~ &__label:first-of-type &__heart-stroke {
+		stroke: var(--red);
+		transform: scale(1);
+	}
+	&__input-1:checked ~ &__label:first-of-type &__heart-ring {
+		animation-name: heartRing;
+	}
+	&__input-1:checked ~ &__label:first-of-type &__heart-stroke {
+		animation-name: heartStroke;
+	}
+	&__input-1:checked ~ &__label:first-of-type &__heart-line {
+		animation-name: heartLine;
+	}
+	&__input-1:checked ~ &__label:first-of-type &__heart-fill {
+		animation-name: heartFill;
+	}
+	&__input-1:not(:checked):hover ~ &__label:first-of-type &__heart-fill {
+		fill: var(--red-t);
+	}
+	// screen reader text
+	&__sr {
+		clip: rect(1px,1px,1px,1px);
+		overflow: hidden;
+		position: absolute;
+		width: 1px;
+		height: 1px;
+	}
+}
+
+// Dark theme
+@media (prefers-color-scheme: dark) {
+	:root {
+		--bg: #{hsl($hue,10%,10%)};
+		--fg: #{hsl($hue,10%,90%)};
+	}
+	.rating {
+		margin: auto;
+
+		&__heart {
+			&-stroke {
+				stroke: hsl($hue,10%,30%);
+			}
+		}
+	}
+}
+
+// Animations
+@keyframes heartRing {
+	from,
+	20% {
+		animation-timing-function: ease-in;
+		opacity: 1;
+		r: 8px;
+		stroke-width: 16px;
+		transform: scale(0);
+	}
+	35% {
+		animation-timing-function: ease-out;
+		opacity: 0.5;
+		r: 8px;
+		stroke-width: 16px;
+		transform: scale(1);
+	}
+	50%,
+	to {
+		opacity: 0;
+		r: 16px;
+		stroke-width: 0;
+		transform: scale(1);	
+	}
+}
+@keyframes heartFill {
+	from,
+	40% {
+		animation-timing-function: ease-out;
+		transform: scale(0);
+	}
+	60% {
+		animation-timing-function: ease-in-out;
+		transform: scale(1.2);
+	}
+	80% {
+		transform: scale(0.9);
+	}
+	to {
+		transform: scale(1);
+	}
+}
+@keyframes heartStroke {
+	from {
+		transform: scale(1);
+	}
+	20%,
+	to {
+		transform: scale(0);
+	}
+}
+@keyframes heartLine {
+	from,
+	40% {
+		animation-timing-function: ease-out;
+		stroke-dasharray: 1 23;
+		stroke-dashoffset: 1;
+	}
+	60%,
+	to {
+		stroke-dasharray: 12 13;
+		stroke-dashoffset: -13;
+	}
+}
+
+// 40% {
+// 	animation-timing-function: ease-out;
+// 	transform: translate(50%) scale(0);
+// }
+// 60% {
+// 	animation-timing-function: ease-in-out;
+// 	transform: translate(-50% -50%) scale(1.2);
+// }
