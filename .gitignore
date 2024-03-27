@@ -11,5 +11,5 @@ dist/
 .vscode/
 
 # Игнорировать дополнительные папки
-client/font/
+client/src/font/
 server/static/
