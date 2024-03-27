@@ -9,3 +9,7 @@ dist/
 .next/
 .webpack/
 .vscode/
+
+# Игнорировать дополнительные папки
+client/font/
+server/static/
