@@ -17,7 +17,7 @@ function App() {
   const handleReloadAlbums = (shouldReload) => {
     setReloadAlbums(shouldReload);
   };
-  console.log(filters)
+  //console.log(filters)
   
   return (
     <div className="app-container">

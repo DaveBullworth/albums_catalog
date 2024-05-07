@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import '../styles/addButton.scss';
 import Star from './Star'
 import Heart from './Heart';
-import { createAlbum, editAlbum } from '../http/albumApi';
+import { createAlbum, editAlbum, parseAlbumLink } from '../http/albumApi';
 
 
 const AddButton = ({ onClick, handleReloadAlbums, editedAlbum }) => {
@@ -185,6 +185,33 @@ const AddButton = ({ onClick, handleReloadAlbums, editedAlbum }) => {
     if(editedAlbum) onClick(); // Это предполагает, что onClick также устанавливает editedAlbum в null
   };
 
+  const parseAlbumData = () => {
+    const { link } = albumData;
+    if (!link) {
+      showToastMessage('Please provide a Spotify link');
+      return;
+    }
+
+    // Call parseAlbumLink function and handle the response
+    parseAlbumLink(link)
+      .then(albumInfo => {
+        if (!albumInfo) {
+          showToastMessage('Failed to fetch album data');
+          return;
+        }
+        // Update albumData state with fetched album info
+        setAlbumData(prevData => ({
+          ...prevData,
+          nameAlbum: albumInfo.albumData,
+          // Update other fields accordingly
+        }));
+      })
+      .catch(error => {
+        console.error('Error parsing album link:', error);
+        showToastMessage('Error parsing album link');
+      });
+  };
+
   return (
     <>
       { !editedAlbum && 
@@ -260,6 +287,16 @@ const AddButton = ({ onClick, handleReloadAlbums, editedAlbum }) => {
                     value={albumData.link}
                     onChange={handleInputChange}
                   />
+                </div>
+                <div className="mb-3">
+                  <button 
+                    type="button" 
+                    style={{width:"70%", marginLeft:"auto"}}
+                    className="btn btn-primary"
+                    onClick={parseAlbumData}
+                  >
+                      GET INFO FROM SPOTIFY
+                  </button>
                 </div>
               </div>
   

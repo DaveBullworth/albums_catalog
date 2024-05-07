@@ -46,7 +46,13 @@
     }
 
     .sort{
-      display: inline-block;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      .triangles{
+        margin-left: 5px;
+      }
     }
   }
 }
