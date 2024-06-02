@@ -46,7 +46,8 @@ class AlbumController {
     }
 
     async getPage(req, res) {
-        let { yearA, yearB, nameBand, estimation, favorite, limit, page } = req.query;
+        let { page, limit, filters } = req.query;
+        filters = filters ? JSON.parse(filters) : {};
         page = page || 1;
         limit = limit || 5;
         let offset = page * limit - limit;
@@ -54,39 +55,53 @@ class AlbumController {
     
         const whereClause = {};
     
-        if (yearA) {
-            whereClause.year = { [Op.gt]: yearA };
+        if (filters.yearA) {
+            whereClause.year = { [Op.gt]: filters.yearA - 1 };
         }
     
-        if (yearB) {
+        if (filters.yearB) {
             if (whereClause.year) {
-                whereClause.year[Op.lt] = yearB;
+                whereClause.year[Op.lt] = Number(filters.yearB) + 1;
             } else {
-                whereClause.year = { [Op.lt]: yearB };
+                whereClause.year = { [Op.lt]: Number(filters.yearB) + 1 };
             }
         }
     
-        if (nameBand && !estimation && !favorite) {
-            whereClause.nameBand = nameBand;
+        if (filters.nameBand) {
+            whereClause.nameBand = { [Op.like]: `%${filters.nameBand}%` };
         }
     
-        if (estimation) {
-            whereClause.estimation = estimation;
+        if (filters.nameAlbum) {
+            whereClause.nameAlbum = { [Op.like]: `%${filters.nameAlbum}%` };
         }
     
-        if (favorite) {
-            whereClause.favorite = favorite;
+        if (filters.estimation) {
+            whereClause.estimation = filters.estimation;
+        }
+    
+        if (filters.favorite) {
+            whereClause.favorite = filters.favorite;
+        }
+    
+        let order = [['id', 'ASC']]; // Default order by ID
+    
+        if (filters.sortYear) {
+            if (filters.sortYear === 'asc') {
+                order = [['year', 'ASC']];
+            } else if (filters.sortYear === 'desc') {
+                order = [['year', 'DESC']];
+            }
         }
     
         albums = await Album.findAndCountAll({
             where: whereClause,
-            order: [['id', 'ASC']],
+            order: order,
             limit,
             offset
         });
     
         return res.json(albums);
-    }
+    }    
 
     async delete(req, res, next) {
         const { id } = req.params;

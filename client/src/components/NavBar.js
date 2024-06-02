@@ -4,10 +4,11 @@ import Star from '../components/Star';
 import '../styles/navBar.scss';
 import * as bootstrap from 'bootstrap';
 
-const NavBar = ({ filters, setFilters }) => {
+const NavBar = ({ filters, setFilters, handleReloadAlbums }) => {
     const [yearAInput, setYearAInput] = useState('');
     const [yearBInput, setYearBInput] = useState('');
     const [nameBandInput, setNameBandInput] = useState('');
+    const [nameAlbumInput, setNameAlbumInput] = useState('');
     const [showTooltip, setShowTooltip] = useState(false);
     const [sortBy, setSortBy] = useState(null); // State to track sorting
 
@@ -45,6 +46,8 @@ const NavBar = ({ filters, setFilters }) => {
             }
         } else if (name === 'nameBand') {
             setNameBandInput(value);
+        } else if (name === 'nameAlbum') {
+            setNameAlbumInput(value);
         }
     }
 
@@ -53,6 +56,7 @@ const NavBar = ({ filters, setFilters }) => {
             ...prevFilters,
             estimation: value
         }));
+        handleReloadAlbums(true);
     }
 
     const handleStarChange = (value) => {
@@ -60,6 +64,7 @@ const NavBar = ({ filters, setFilters }) => {
             ...prevFilters,
             favorite: value
         }));
+        handleReloadAlbums(true);
     }
 
     const handleFilterButtonClick = () => {
@@ -74,18 +79,33 @@ const NavBar = ({ filters, setFilters }) => {
             ...filters,
             yearA: yearAInput,
             yearB: yearBInput,
-            nameBand: nameBandInput
+            nameBand: nameBandInput,
+            nameAlbum: nameAlbumInput
         });
+        handleReloadAlbums(true);
     }
 
     const handleSortByClick = () => {
         if (sortBy === null) {
             setSortBy('asc');
+            setFilters({
+                ...filters,
+                sortYear: 'asc'
+            })
         } else if (sortBy === 'asc') {
             setSortBy('desc');
+            setFilters({
+                ...filters,
+                sortYear: 'desc'
+            })
         } else if ( sortBy === 'desc') {
             setSortBy(null); 
+            setFilters({
+                ...filters,
+                sortYear: false
+            })
         }
+        handleReloadAlbums(true);
     }
 
     return ( 
@@ -135,6 +155,26 @@ const NavBar = ({ filters, setFilters }) => {
                         id="nameBand"
                         name="nameBand"
                         value={nameBandInput}
+                        onChange={handleInputChange}
+                    />
+                    <button 
+                        className="btn btn-outline-secondary" 
+                        type="button"
+                        onClick={handleFilterButtonClick}
+                    >
+                        <i className="bi bi-search"></i>
+                    </button>
+                </form>
+                <span>Album Name</span>
+                <form className="d-flex" role="search">
+                    <input 
+                        className="form-control me-2" 
+                        type="search" 
+                        placeholder="Search" 
+                        aria-label="Search"
+                        id="nameAlbum"
+                        name="nameAlbum"
+                        value={nameAlbumInput}
                         onChange={handleInputChange}
                     />
                     <button 

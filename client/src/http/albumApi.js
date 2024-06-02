@@ -11,11 +11,21 @@ export const createAlbum = async (albumData) => {
   }
 };
 
+export const fetchAlbums = async (page, limit, filters) => {
+  let url = `api/album?`;
 
-export const fetchAlbums = async () => {
-  const { data } = await $host.get('api/album');
+  if (page && limit ) {
+    url += `&page=${page}&limit=${limit}`;
+  }
+
+  if (filters && Object.keys(filters).length > 0) {
+    url += `&filters=${JSON.stringify(filters)}`;
+  }
+
+  const { data } = await $host.get(url);
   return data;
 };
+
 
 export const editAlbum = async (id, albumData) => {
   try {

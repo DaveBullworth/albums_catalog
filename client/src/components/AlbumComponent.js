@@ -6,7 +6,7 @@ import '../styles/albumComponent.scss';
 import '../http/albumApi';
 import { fetchAlbums, fetchOneAlbum, deleteAlbum } from '../http/albumApi';
 
-const AlbumComponent = ({reload, handleReloadAlbums}) => {
+const AlbumComponent = ({reload, handleReloadAlbums, filters}) => {
   const [albumData, setAlbumData] = useState([]);
   const [selectedAlbum, setSelectedAlbum] = useState(null);
   const [expandedCardIndex, setExpandedCardIndex] = useState(null);
@@ -22,20 +22,20 @@ const AlbumComponent = ({reload, handleReloadAlbums}) => {
 
   useLayoutEffect(() => {
     const fetchData = async () => {
-      const data = await fetchAlbums();
+      console.log(filters)
+      const data = await fetchAlbums(null,null, filters);
       setAlbumData(data.rows);
-  
-      setTimeout(() => {
-        if (albumInfoRef.current) {
-          const height = albumInfoRef.current.scrollHeight;
-          setAlbumInfoHeight(height);
-        }
-      }, 100);
     };
+
+    setTimeout(() => {
+      if (albumInfoRef.current) {
+        const height = albumInfoRef.current.scrollHeight;
+        setAlbumInfoHeight(height);
+      }
+    }, 100);
   
-    fetchData();
+    if(reload)fetchData();
     if (reload) {
-      fetchData();
       handleReloadAlbums(false); 
     }
   }, [selectedAlbum, reload]);
