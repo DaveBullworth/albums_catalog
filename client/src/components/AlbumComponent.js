@@ -15,15 +15,17 @@ const AlbumComponent = ({reload, handleReloadAlbums, filters}) => {
   const [_deleteAlbum, setDeleteAlbum] = useState(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editAlbumData, setEditAlbumData] = useState(null);
-
   const [toastMessage, setToastMessage] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const PAGE_SIZE = 4;
 
   const albumInfoRef = useRef(null);
 
   useLayoutEffect(() => {
     const fetchData = async () => {
-      console.log(filters)
-      const data = await fetchAlbums(null,null, filters);
+      const data = await fetchAlbums(currentPage, PAGE_SIZE, filters);
+      setTotalPages(Math.ceil(data.count / PAGE_SIZE));
       setAlbumData(data.rows);
     };
 
@@ -34,11 +36,11 @@ const AlbumComponent = ({reload, handleReloadAlbums, filters}) => {
       }
     }, 100);
   
-    if(reload)fetchData();
     if (reload) {
+      fetchData();
       handleReloadAlbums(false); 
     }
-  }, [selectedAlbum, reload]);
+  }, [selectedAlbum, currentPage, reload]);
 
   useEffect(() => {
     if (isDeleteModalOpen) {
@@ -123,6 +125,24 @@ const AlbumComponent = ({reload, handleReloadAlbums, filters}) => {
     }, 0)
   };
 
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
+  };
+
+  const renderPagination = () => {
+    const pages = [];
+    for (let i = 1; i <= totalPages; i++) {
+      pages.push(
+        <li key={i} className={`page-item ${i === currentPage ? 'active' : ''}`}>
+          <button className="page-link" onClick={() => handlePageChange(i)}>
+            {i}
+          </button>
+        </li>
+      );
+    }
+    return pages;
+  };
+
   return (
     <div className="list">
       {albumData.map((album, index) => (
@@ -156,6 +176,12 @@ const AlbumComponent = ({reload, handleReloadAlbums, filters}) => {
           </div>
         </React.Fragment>
       ))}
+      {/* Pagination */}
+      <nav aria-label="Page navigation example">
+        <ul className="pagination justify-content-center">
+          {renderPagination()}
+        </ul>
+      </nav>
       {/* Modal for Editing Album */}
       {isEditModalOpen && (
         <AddButton

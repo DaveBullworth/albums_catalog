@@ -49,7 +49,7 @@ class AlbumController {
         let { page, limit, filters } = req.query;
         filters = filters ? JSON.parse(filters) : {};
         page = page || 1;
-        limit = limit || 5;
+        limit = limit || 4;
         let offset = page * limit - limit;
         let albums;
     

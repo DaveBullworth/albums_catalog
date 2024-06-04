@@ -56,8 +56,8 @@ export const deleteAlbum = async (id) => {
 export const parseAlbumLink = async (link) => {
   try {
     const response = await $host.get(`api/parse/?link=${link}`);
-    console.log('Response data:', response.data);
-    return response.data;
+    console.log('Response data:', response.data.albumData);
+    return response.data.albumData;
   } catch (error) {
     console.error("Error parsing link:", error);
     throw error;

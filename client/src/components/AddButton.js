@@ -202,7 +202,16 @@ const AddButton = ({ onClick, handleReloadAlbums, editedAlbum }) => {
         // Update albumData state with fetched album info
         setAlbumData(prevData => ({
           ...prevData,
-          nameAlbum: albumInfo.albumData,
+          nameAlbum: albumInfo.albumName,
+          nameBand: albumInfo.bandName,
+          review: albumInfo.cover,
+          year:  albumInfo.year,
+          tracks:  albumInfo.tracks.map((track, index) => ({
+            order: index + 1,
+            nameTrack: track.trackName,
+            link: track.trackLink,
+            estimation: false
+          }))
           // Update other fields accordingly
         }));
       })
