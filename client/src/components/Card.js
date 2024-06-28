@@ -84,6 +84,24 @@ const Card = ({ _key, number, year, imageSrc, albumName, bandName, icon1, icon2,
     ink.classList.add('animate');
   };
 
+  const getBandNameClass = () => {
+    if (bandName.length > 50) {
+      return 'small-font tight-spacing';
+    } else if (bandName.length > 35) {
+      return 'tight-spacing';
+    }
+    return '';
+  };
+
+  const getAlbumNameClass = () => {
+    if (albumName.length > 40) {
+      return 'small-font';
+    } else if (albumName.length > 30) {
+      return 'tight-spacing';
+    }
+    return '';
+  };
+
   return (
     <div className="card-wrapper" onClick={handleCardClick} style={{ margin: isExpanded ? '0' : '0 0 10px' }}>
       <div className={`card ripple ${isExpanded ? 'expanded' : ''}`} 
@@ -97,8 +115,8 @@ const Card = ({ _key, number, year, imageSrc, albumName, bandName, icon1, icon2,
           <img src={process.env.REACT_APP_API_URL + imageSrc} alt="Album Cover" />
         </div>
         <div className="block" style={{ color: isColorDark ? 'white' : 'black' }}>
-          <div className="albumName">{albumName}</div>
-          <div className="bandName">{bandName}</div>
+          <div className={`albumName ${getAlbumNameClass()}`}>{albumName}</div>
+          <div className={`bandName ${getBandNameClass()}`}>{bandName}</div>
         </div>
         <div className="block" style={{ fontSize: '1.5rem' }}>
           <div className="icon1">{icon1 ? <i className={`bi bi-heart-fill ${isColorDark ? 'text-white' : ''}`}></i> 
