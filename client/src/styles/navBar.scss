@@ -21,9 +21,26 @@
       box-shadow: 0 0 0 4px rgba(255, 0, 0, 0.35);
     }
 
-    .years{
+    .years {
       display: flex;
       flex-direction: row;
+      position: relative;
+      .btn-reset-years {
+        background-color: red;
+        color: white;
+        border: none;
+        position: absolute;
+        right: -3.5rem;
+        top: 50%;
+        transform: translateY(-50%);
+        padding: 0.25rem 0.5rem;
+        font-size: 1rem;
+        cursor: pointer;
+  
+        &:hover {
+          background-color: darkred;
+        }
+      }
     }
 
     input[type="text"] {
@@ -31,21 +48,21 @@
       text-align: center;
     }
 
-    .inputs{
+    .inputs {
       margin-right: 0.5rem;
-    }   
+    }
 
     .dash {
       margin: 5px 5px; /* Отступ между дефисом и инпутами */
     }
 
-    .estimations{
+    .estimations {
       display: flex;
       margin-top: 8px;
       gap: 1rem;
     }
 
-    .sort{
+    .sort {
       width: 100%;
       display: flex;
       flex-direction: column;
@@ -63,10 +80,42 @@
         }
       }
     }
+
+    .btn-reset-name {
+      background-color: red;
+      color: white;
+      border: none;
+      position: absolute;
+      right: -2.8rem;
+      padding: 0.25rem 0.5rem;
+      transform: translateY(10%);
+      font-size: 1rem;
+      cursor: pointer;
+
+      &:hover {
+        background-color: darkred;
+      }
+    }
+
+    .btn-reset-name {
+      background-color: red;
+      color: white;
+      border: none;
+      position: absolute;
+      right: -2.8rem;
+      padding: 0.25rem 0.5rem;
+      transform: translateY(10%);
+      font-size: 1rem;
+      cursor: pointer;
+
+      &:hover {
+        background-color: darkred;
+      }
+    }
   }
 }
 
 .tooltip-inner {
   background-color: rgb(185, 0, 0)!important;
   font-family: 'Space Grotesk', sans-serif;
-} 
+}

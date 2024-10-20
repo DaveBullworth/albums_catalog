@@ -100,6 +100,14 @@ body {
     transition: transform 0.5s ease;
 }
 
+.tight-spacing {
+    letter-spacing: -1px;
+}
+
+.small-font {
+    font-size: 1.2em;
+}
+
 /* Медиазапрос для ширины экрана меньше 1250px */
 @media (max-width: 1280px) {
     .block .year, .block .albumName {

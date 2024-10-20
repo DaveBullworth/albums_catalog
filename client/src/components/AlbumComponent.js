@@ -22,13 +22,13 @@ const AlbumComponent = ({reload, handleReloadAlbums, filters}) => {
 
   const albumInfoRef = useRef(null);
 
-  useLayoutEffect(() => {
-    const fetchData = async () => {
-      const data = await fetchAlbums(currentPage, PAGE_SIZE, filters);
-      setTotalPages(Math.ceil(data.count / PAGE_SIZE));
-      setAlbumData(data.rows);
-    };
+  const fetchData = async () => {
+    const data = await fetchAlbums(currentPage, PAGE_SIZE, filters);
+    setTotalPages(Math.ceil(data.count / PAGE_SIZE));
+    setAlbumData(data.rows);
+  };
 
+  useLayoutEffect(() => {
     setTimeout(() => {
       if (albumInfoRef.current) {
         const height = albumInfoRef.current.scrollHeight;
@@ -41,7 +41,7 @@ const AlbumComponent = ({reload, handleReloadAlbums, filters}) => {
       fetchData();
       handleReloadAlbums(false); 
     }
-  }, [selectedAlbum, currentPage, reload]);
+  }, [selectedAlbum, reload]);
 
   useEffect(() => {
     if (isDeleteModalOpen) {
@@ -50,6 +50,10 @@ const AlbumComponent = ({reload, handleReloadAlbums, filters}) => {
       window.$('#deleteModal').modal('hide');
     }
   }, [isDeleteModalOpen]);
+  
+  useEffect(() => {
+    fetchData();
+  }, [currentPage]);
 
   useEffect(() => {
     setCurrentPage(1)
