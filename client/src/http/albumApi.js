@@ -12,6 +12,7 @@ export const createAlbum = async (albumData) => {
 };
 
 export const fetchAlbums = async (page, limit, filters) => {
+  
   let url = `api/album?`;
 
   if (page && limit ) {

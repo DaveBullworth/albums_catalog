@@ -14,3 +14,13 @@ p{
 .p_review{
     font-family: 'Noto Sans', sans-serif;
 }
+
+/* Медиазапрос для ширины экрана меньше 1250px */
+@media (max-width: 1280px) {
+    .album-info{
+        font-size: 12px;
+    }
+    .text-center{
+        font-size: 13px!important;
+    }
+}

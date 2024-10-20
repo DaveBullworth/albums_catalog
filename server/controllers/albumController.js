@@ -91,6 +91,24 @@ class AlbumController {
             } else if (filters.sortYear === 'desc') {
                 order = [['year', 'DESC']];
             }
+        } 
+
+            // Sorting by band name
+        if (filters.sortBandName) {
+            if (filters.sortBandName === 'asc') {
+                order = [['nameBand', 'ASC']];
+            } else if (filters.sortBandName === 'desc') {
+                order = [['nameBand', 'DESC']];
+            }
+        }
+
+        // Sorting by album name
+        if (filters.sortAlbumName) {
+            if (filters.sortAlbumName === 'asc') {
+                order = [['nameAlbum', 'ASC']];
+            } else if (filters.sortAlbumName === 'desc') {
+                order = [['nameAlbum', 'DESC']];
+            }
         }
     
         albums = await Album.findAndCountAll({

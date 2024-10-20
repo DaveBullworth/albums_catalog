@@ -48,10 +48,19 @@
     .sort{
       width: 100%;
       display: flex;
+      flex-direction: column;
       align-items: center;
       justify-content: center;
-      .triangles{
-        margin-left: 5px;
+      .sort-element{
+        user-select: none;
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        .triangles{
+          width: 1rem;
+          margin-right: 1rem;
+        }
       }
     }
   }

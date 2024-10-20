@@ -4,13 +4,16 @@ import Star from '../components/Star';
 import '../styles/navBar.scss';
 import * as bootstrap from 'bootstrap';
 
-const NavBar = ({ filters, setFilters, handleReloadAlbums }) => {
+const NavBar = ({ filters, setFilters, handleReloadAlbums, reset }) => {
     const [yearAInput, setYearAInput] = useState('');
     const [yearBInput, setYearBInput] = useState('');
     const [nameBandInput, setNameBandInput] = useState('');
     const [nameAlbumInput, setNameAlbumInput] = useState('');
     const [showTooltip, setShowTooltip] = useState(false);
-    const [sortBy, setSortBy] = useState(null); // State to track sorting
+
+    const [sortYear, setSortYear] = useState(null);
+    const [sortBandName, setSortBandName] = useState(null);
+    const [sortAlbumName, setSortAlbumName] = useState(null);
 
     const yearBInputRef = useRef(null);
 
@@ -85,28 +88,33 @@ const NavBar = ({ filters, setFilters, handleReloadAlbums }) => {
         handleReloadAlbums(true);
     }
 
-    const handleSortByClick = () => {
-        if (sortBy === null) {
-            setSortBy('asc');
-            setFilters({
-                ...filters,
-                sortYear: 'asc'
-            })
-        } else if (sortBy === 'asc') {
-            setSortBy('desc');
-            setFilters({
-                ...filters,
-                sortYear: 'desc'
-            })
-        } else if ( sortBy === 'desc') {
-            setSortBy(null); 
-            setFilters({
-                ...filters,
-                sortYear: false
-            })
-        }
+    // Общая функция для сортировки
+    const handleSort = (currentSortValue, sortName, setSortState) => {
+        // Определение нового значения сортировки
+        const newSortValue = currentSortValue === null ? 'asc' : currentSortValue === 'asc' ? 'desc' : null;
+
+        // Обновляем состояние сортировки (asc, desc или null)
+        setSortState(newSortValue);
+
+        // Обновляем фильтры с помощью нового значения сортировки
+        setFilters(prevFilters => ({
+            ...prevFilters,
+            [sortName]: newSortValue ? newSortValue : false
+        }));
+
         handleReloadAlbums(true);
     }
+
+    useEffect(() => {
+        setYearAInput('')
+        setYearBInput('')
+        setNameBandInput('')
+        setNameAlbumInput('')
+        setShowTooltip(false)
+        setSortYear(null)
+        setSortBandName(null)
+        setSortAlbumName(null)
+    }, [reset]);  
 
     return ( 
         <nav className="navbar bg-body-tertiary">
@@ -199,13 +207,33 @@ const NavBar = ({ filters, setFilters, handleReloadAlbums }) => {
                 </div>
                 <span>Sort by:</span>
                 <div className='sort'>
-                    <span onClick={handleSortByClick} style={sortBy ? {cursor: 'pointer', color: 'blue', textDecoration: 'underline'}:{cursor: 'pointer'}}>Release Year</span>
-                    {sortBy !== null && (
-                        <div className='triangles'>
-                            <div style={{width: '0', height: '0', borderLeft: '5px solid transparent', borderRight: '5px solid transparent', borderBottom: `5px solid ${sortBy === 'asc' ? 'blue' : 'black'}`, marginBottom: '3px'}}></div>
-                            <div style={{width: '0', height: '0', borderLeft: '5px solid transparent', borderRight: '5px solid transparent', borderTop: `5px solid ${sortBy === 'desc' ? 'blue' : 'black'}`}}></div>
+                    <div className='sort-element'>
+                        <span onClick={() => handleSort(sortYear, "sortYear", setSortYear)} style={sortYear ? {cursor: 'pointer', color: 'blue', textDecoration: 'underline'}:{cursor: 'pointer'}}>Release Year</span>
+                        {sortYear !== null && (
+                            <div className='triangles'>
+                                <div style={{width: '0', height: '0', borderLeft: '5px solid transparent', borderRight: '5px solid transparent', borderBottom: `5px solid ${sortYear === 'asc' ? 'blue' : 'black'}`, marginBottom: '3px'}}></div>
+                                <div style={{width: '0', height: '0', borderLeft: '5px solid transparent', borderRight: '5px solid transparent', borderTop: `5px solid ${sortYear === 'desc' ? 'blue' : 'black'}`}}></div>
+                            </div>
+                        )}
                         </div>
-                    )}
+                    <div className='sort-element'>
+                        <span onClick={() => handleSort(sortBandName, "sortBandName", setSortBandName)} style={sortBandName ? {cursor: 'pointer', color: 'blue', textDecoration: 'underline'}:{cursor: 'pointer'}}>Band Name</span>
+                        {sortBandName !== null && (
+                            <div className='triangles'>
+                                <div style={{width: '0', height: '0', borderLeft: '5px solid transparent', borderRight: '5px solid transparent', borderBottom: `5px solid ${sortBandName === 'asc' ? 'blue' : 'black'}`, marginBottom: '3px'}}></div>
+                                <div style={{width: '0', height: '0', borderLeft: '5px solid transparent', borderRight: '5px solid transparent', borderTop: `5px solid ${sortBandName === 'desc' ? 'blue' : 'black'}`}}></div>
+                            </div>
+                        )}
+                    </div>
+                    <div className='sort-element'>
+                        <span onClick={() => handleSort(sortAlbumName, "sortAlbumName", setSortAlbumName)} style={sortAlbumName ? {cursor: 'pointer', color: 'blue', textDecoration: 'underline'}:{cursor: 'pointer'}}>Album Name</span>
+                        {sortAlbumName !== null && (
+                            <div className='triangles'>
+                                <div style={{width: '0', height: '0', borderLeft: '5px solid transparent', borderRight: '5px solid transparent', borderBottom: `5px solid ${sortAlbumName === 'asc' ? 'blue' : 'black'}`, marginBottom: '3px'}}></div>
+                                <div style={{width: '0', height: '0', borderLeft: '5px solid transparent', borderRight: '5px solid transparent', borderTop: `5px solid ${sortAlbumName === 'desc' ? 'blue' : 'black'}`}}></div>
+                            </div>
+                        )}
+                    </div>
                 </div>
                 {/* <span onClick={handleSortByClick} style={sortBy ? {cursor: 'pointer', color: 'blue', textDecoration: 'underline'}:{cursor: 'pointer'}}>Sort by: Release Year</span> */}
             </div>

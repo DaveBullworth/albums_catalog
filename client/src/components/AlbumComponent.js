@@ -37,6 +37,7 @@ const AlbumComponent = ({reload, handleReloadAlbums, filters}) => {
     }, 100);
   
     if (reload) {
+      handleCollapse();
       fetchData();
       handleReloadAlbums(false); 
     }
@@ -49,6 +50,10 @@ const AlbumComponent = ({reload, handleReloadAlbums, filters}) => {
       window.$('#deleteModal').modal('hide');
     }
   }, [isDeleteModalOpen]);
+
+  useEffect(() => {
+    setCurrentPage(1)
+  }, [filters]);
   
   const handleCardClick = (albumId, index) => {
     if (expandedCardIndex === index) {

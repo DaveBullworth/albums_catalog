@@ -94,7 +94,7 @@ const Card = ({ _key, number, year, imageSrc, albumName, bandName, icon1, icon2,
           <div className="year">{year}</div>
         </div>
         <div className="block" onClick={handleImageClick}>
-          <img src={process.env.REACT_APP_API_URL + imageSrc} alt="Album Cover" />
+          <img className="album-cover" src={process.env.REACT_APP_API_URL + imageSrc} alt="Album Cover" />
         </div>
         <div className="block" style={{ color: isColorDark ? 'white' : 'black' }}>
           <div className="albumName">{albumName}</div>

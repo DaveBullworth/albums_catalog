@@ -10,6 +10,11 @@ body {
   align-items: flex-start;
 }
 
+.app-container {
+  width: 60rem; /* Максимальная ширина для больших экранов */
+  margin: 0 auto; /* Выравнивание по центру */
+}
+
 .content-container {
   text-align: center;
   display: flex;
@@ -21,4 +26,24 @@ body {
   position: absolute;
   top: 28px;
   left: 20px;
+}
+
+.reset-filters{
+  width: 100%;
+  margin-top: 1rem;
+}
+
+/* Медиазапрос для ширины экрана меньше 1250px */
+@media (max-width: 1280px) {
+  .filter-container {
+    display: flex;
+    flex-direction: column;
+    width: 15rem;
+    position: static;
+    margin: 2rem auto;
+  }
+  .app-container {
+    width: 95%; /* Максимальная ширина для больших экранов */
+    margin: 0 auto; /* Выравнивание по центру */
+  }
 }

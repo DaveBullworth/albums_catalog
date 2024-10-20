@@ -167,3 +167,19 @@ h1 {
     opacity: 1;
   }
 }
+
+@media (max-width: 1000px) { /* Максимальная ширина для iPhone 14 Pro */
+  .modal-body.d-flex {
+    flex-direction: column;
+  }
+  .btn-success{
+    display: flex;
+    margin: 0 47%;
+    padding-left: 0.5;
+    width: auto;
+    justify-content: center;
+  }
+  .rightInputs {
+    margin-top: 20px; /* Отступ между колонками на мобильных устройствах */
+  }
+}

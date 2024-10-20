@@ -7,6 +7,7 @@ import { createAlbum, editAlbum, parseAlbumLink } from '../http/albumApi';
 
 const AddButton = ({ onClick, handleReloadAlbums, editedAlbum }) => {
   const initialTrack = { order: 1, nameTrack: '', estimation: false, link: '' };
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 1000);
 
   const [toastMessage, setToastMessage] = useState('');
   
@@ -22,35 +23,9 @@ const AddButton = ({ onClick, handleReloadAlbums, editedAlbum }) => {
     tracks: [initialTrack],
   });
 
-  useEffect(() => {
-    if (editedAlbum) {
-      const modal = new window.bootstrap.Modal(document.getElementById('exampleModal'));
-      modal.show();
-      setAlbumData({
-        nameAlbum: editedAlbum.nameAlbum,
-        nameBand: editedAlbum.nameBand,
-        review: editedAlbum.review,
-        estimation: editedAlbum.estimation,
-        favorite: editedAlbum.favorite,
-        year: editedAlbum.year,
-        cover: editedAlbum.cover,
-        link: editedAlbum.link,
-        tracks: editedAlbum.tracks || [initialTrack],
-      });
-    } else {
-      setAlbumData({
-        nameAlbum: '',
-        nameBand: '',
-        review: '',
-        estimation: false,
-        favorite: false,
-        year: '',
-        cover: null,
-        link: '',
-        tracks: [initialTrack],
-      });
-    }
-  }, [editedAlbum]);
+  const handleResize = () => {
+    setIsMobile(window.innerWidth < 1000);
+  };
 
   const showToastMessage = (message) => {
     setToastMessage(message);
@@ -221,6 +196,43 @@ const AddButton = ({ onClick, handleReloadAlbums, editedAlbum }) => {
       });
   };
 
+  useEffect(() => {
+    window.addEventListener('resize', handleResize);
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (editedAlbum) {
+      const modal = new window.bootstrap.Modal(document.getElementById('exampleModal'));
+      modal.show();
+      setAlbumData({
+        nameAlbum: editedAlbum.nameAlbum,
+        nameBand: editedAlbum.nameBand,
+        review: editedAlbum.review,
+        estimation: editedAlbum.estimation,
+        favorite: editedAlbum.favorite,
+        year: editedAlbum.year,
+        cover: editedAlbum.cover,
+        link: editedAlbum.link,
+        tracks: editedAlbum.tracks || [initialTrack],
+      });
+    } else {
+      setAlbumData({
+        nameAlbum: '',
+        nameBand: '',
+        review: '',
+        estimation: false,
+        favorite: false,
+        year: '',
+        cover: null,
+        link: '',
+        tracks: [initialTrack],
+      });
+    }
+  }, [editedAlbum]);
+
   return (
     <>
       { !editedAlbum && 
@@ -245,7 +257,7 @@ const AddButton = ({ onClick, handleReloadAlbums, editedAlbum }) => {
             </div>
             <div className="modal-body d-flex">
               {/* Left side - Inputs */}
-              <div className="w-50 p-3 leftInputs" >
+              <div className={`p-3 ${isMobile ? '' : 'w-50'} leftInputs`}>
                 <div className="mb-3">
                   <label htmlFor="albumName" className="form-label">
                     Album Name
@@ -310,7 +322,7 @@ const AddButton = ({ onClick, handleReloadAlbums, editedAlbum }) => {
               </div>
   
               {/* Right side - Other elements */}
-              <div className="w-50 p-3 rightInputs">
+              <div className={`p-3 ${isMobile ? '' : 'w-50'} rightInputs`}>
                 <div className='year_estimation_favorite'>
                   <div className="mb-3 row align-items-center">
                     <label htmlFor="releaseYear" className="col-sm-4 col-form-label">

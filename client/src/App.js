@@ -14,11 +14,30 @@ function App() {
     favorite: false,
     nameBand: '',
     nameAlbum: '',
-    sortYear: false
+    sortYear: false,
+    sortBandName: false,
+    sortAlbumName: false,
   });
+  const [reset, setReset] = useState(false);
+
   const handleReloadAlbums = (shouldReload) => {
     setReloadAlbums(shouldReload);
   };
+  const handleResetFilters = () => {
+    setFilters({ 
+        yearA: '',
+        yearB: '',
+        estimation: false,
+        favorite: false,
+        nameBand: '',
+        nameAlbum: '',
+        sortYear: false,
+        sortBandName: false,
+        sortAlbumName: false,
+    })
+    setReset(!reset)
+    handleReloadAlbums(true);
+  } 
   
   return (
     <div className="app-container">
@@ -27,7 +46,11 @@ function App() {
           filters={filters} 
           setFilters={setFilters}
           handleReloadAlbums={handleReloadAlbums} 
+          reset={reset}
         />
+        <button type="button" className="btn btn-secondary reset-filters" onClick={handleResetFilters}>
+              Reset 
+        </button>
       </div>
       <div className="content-container">
         <AlbumComponent 

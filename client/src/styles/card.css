@@ -99,3 +99,46 @@ body {
 .card .bi-triangle-fill {
     transition: transform 0.5s ease;
 }
+
+/* Медиазапрос для ширины экрана меньше 1250px */
+@media (max-width: 1280px) {
+    .block .year, .block .albumName {
+        font-size: 0.8em; 
+    }
+    .block .number, .block .bandName {
+        font-size: 0.7em;
+    }
+    .block .icon1, .block .icon2{
+        font-size: 0.7em;
+    }
+    .block:nth-child(1) {
+        min-width: 35px; 
+        max-width: 35px;
+    }
+    .block:nth-child(2) {
+        min-width: 75px; 
+        max-width: 75px;
+    }
+    .block:nth-child(3) {
+        min-width: 200px; 
+        max-width: 200px;
+    }
+    .block:nth-child(4) {
+        min-width: 25px; 
+        max-width: 25px;
+    }
+    .block:nth-child(5) {
+        min-width: 30px; 
+        max-width: 30px;
+    }
+    .block .btn{
+        padding: 2px 5px;
+        font-size: 10px;
+    }
+    .album-cover {
+        max-width: 100%;
+    }
+    .bi-triangle-fill{
+        font-size: 12px;
+    }
+}

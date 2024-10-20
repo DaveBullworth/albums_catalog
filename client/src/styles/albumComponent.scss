@@ -1,12 +1,10 @@
-$container-width: 720px;
-
 body {
     background: #efefef;
   }
   
 .list {
     margin: 30px auto;
-    max-width: $container-width;
+    width: 90%;
 }
 
 .card {
@@ -22,7 +20,7 @@ body {
     margin-bottom: 10px;
     box-shadow: 0 1px 4px 0 #666;
     background: #fff;
-    width: $container-width;
+    width: 100%;
     overflow: hidden;
     max-height: fit-content;
 }
@@ -57,5 +55,16 @@ body {
     to {
         transform: translateX(0);
         opacity: 1;
+    }
+}
+
+/* Медиазапрос для ширины экрана меньше 1250px */
+@media (max-width: 1280px) {
+    .list{
+        margin: 30px 0; 
+        width: 105%;
+    }
+    .card{
+        height: 80px;
     }
 }
