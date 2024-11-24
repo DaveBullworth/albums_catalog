@@ -1,0 +1,27 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@1,500&display=swap');
+
+.table-container,
+.text-block {
+  margin: 5px;
+  border: 3px solid black;
+  border-radius: 4px;
+  padding: 10px;
+}
+
+p {
+  margin-bottom: 0;
+}
+
+.p_review {
+  font-family: 'Noto Sans', sans-serif;
+}
+
+@media (max-width: 1280px) {
+  .album-info {
+    font-size: 12px;
+  }
+
+  .text-center {
+    font-size: 13px !important;
+  }
+}

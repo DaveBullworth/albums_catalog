@@ -1,6 +1,8 @@
 .navbar {
   border-radius: 10px;
-  box-shadow: -0.2rem -0.2rem 0.5rem hsl(0 0% 100% / .75), 0.2rem 0.2rem 0.5rem hsl(0 0% 50% / .5);
+  box-shadow:
+    -0.2rem -0.2rem 0.5rem hsl(0 0% 100% / 0.75),
+    0.2rem 0.2rem 0.5rem hsl(0 0% 50% / 0.5);
   width: 15rem;
 
   .container-fluid {
@@ -9,6 +11,7 @@
     align-items: center;
 
     span {
+      color: #000;
       margin: 8px 0 8px; /* Отступ снизу надписи "Years" */
     }
 
@@ -36,15 +39,15 @@
         padding: 0.25rem 0.5rem;
         font-size: 1rem;
         cursor: pointer;
-  
+
         &:hover {
           background-color: darkred;
         }
       }
     }
 
-    input[type="text"] {
-      width: 75px; 
+    input[type='text'] {
+      width: 75px;
       text-align: center;
     }
 
@@ -68,13 +71,13 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      .sort-element{
+      .sort-element {
         user-select: none;
         width: 100%;
         display: flex;
         justify-content: space-between;
         align-items: center;
-        .triangles{
+        .triangles {
           width: 1rem;
           margin-right: 1rem;
         }
@@ -116,6 +119,6 @@
 }
 
 .tooltip-inner {
-  background-color: rgb(185, 0, 0)!important;
+  background-color: rgb(185, 0, 0) !important;
   font-family: 'Space Grotesk', sans-serif;
 }

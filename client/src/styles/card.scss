@@ -1,0 +1,169 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700&display=swap');
+
+body {
+  font-family: 'Space Grotesk', sans-serif;
+}
+
+.card-wrapper {
+  margin: 0 0 10px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 1px 4px 0 #666;
+  border-radius: 5px;
+
+  .ink {
+    position: absolute;
+    background-color: rgba(204, 204, 204, 0.7);
+    border-radius: 50%;
+    transform: scale(0);
+    animation: ripple 0.65s linear;
+    pointer-events: none;
+  }
+}
+
+.card {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  border: 1px solid #ccc;
+  position: relative;
+  cursor: pointer;
+
+  &.expanded {
+    .bi-triangle-fill.rotate {
+      transform: rotate(180deg);
+    }
+  }
+
+  .bi-triangle-fill {
+    transition: transform 0.5s ease;
+  }
+}
+
+.block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+
+  // Первый блок
+  &:nth-child(1) {
+    flex: 1;
+    min-width: 40px;
+    max-width: 70px;
+  }
+
+  // Второй блок
+  &:nth-child(2) {
+    flex: 1;
+    min-width: 50px;
+    max-width: 120px;
+  }
+
+  // Третий блок
+  &:nth-child(3) {
+    flex: 2;
+    min-width: 180px;
+    align-items: flex-start;
+    margin-left: 1em;
+  }
+
+  // Четвертый блок
+  &:nth-child(4) {
+    flex: 1;
+    min-width: 60px;
+    max-width: 60px;
+  }
+
+  // Пятый блок
+  &:nth-child(5) {
+    flex: 1;
+    min-width: 50px;
+    max-width: 80px;
+    row-gap: 5px;
+  }
+
+  .year,
+  .albumName {
+    font-weight: bold;
+    font-size: 1.4em;
+  }
+
+  .number,
+  .bandName {
+    font-size: 1.2em;
+  }
+}
+
+.tight-spacing {
+  letter-spacing: -1px;
+}
+
+.small-font {
+  font-size: 1.2em;
+}
+
+@keyframes ripple {
+  to {
+    opacity: 0;
+    transform: scale(3);
+  }
+}
+
+@media (max-width: 1280px) {
+  .block {
+    .year,
+    .albumName {
+      font-size: 0.8em;
+    }
+
+    .number,
+    .bandName {
+      font-size: 0.7em;
+    }
+
+    .icon1,
+    .icon2 {
+      font-size: 0.7em;
+    }
+
+    &:nth-child(1) {
+      min-width: 35px;
+      max-width: 35px;
+    }
+
+    &:nth-child(2) {
+      min-width: 75px;
+      max-width: 75px;
+    }
+
+    &:nth-child(3) {
+      min-width: 200px;
+      max-width: 200px;
+    }
+
+    &:nth-child(4) {
+      min-width: 25px;
+      max-width: 25px;
+    }
+
+    &:nth-child(5) {
+      min-width: 30px;
+      max-width: 30px;
+    }
+
+    .btn {
+      padding: 2px 5px;
+      font-size: 10px;
+    }
+  }
+
+  .album-cover {
+    max-width: 100%;
+  }
+
+  .bi-triangle-fill {
+    font-size: 12px;
+  }
+}

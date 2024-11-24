@@ -1,4 +1,4 @@
-import { $host } from "./index";
+import { $host } from './index';
 
 export const createAlbum = async (albumData) => {
   try {
@@ -6,16 +6,15 @@ export const createAlbum = async (albumData) => {
     return response.data;
   } catch (error) {
     // Обработка ошибок, если необходимо
-    console.error("Error creating album:", error);
+    console.error('Error creating album:', error);
     throw error; // Прокидываем ошибку дальше, чтобы обработать её в вызывающем коде
   }
 };
 
 export const fetchAlbums = async (page, limit, filters) => {
-  
   let url = `api/album?`;
 
-  if (page && limit ) {
+  if (page && limit) {
     url += `&page=${page}&limit=${limit}`;
   }
 
@@ -27,13 +26,12 @@ export const fetchAlbums = async (page, limit, filters) => {
   return data;
 };
 
-
 export const editAlbum = async (id, albumData) => {
   try {
     const response = await $host.patch(`api/album/${id}`, albumData);
     return response.data;
   } catch (error) {
-    console.error("Error updating album:", error);
+    console.error('Error updating album:', error);
     throw error;
   }
 };
@@ -49,7 +47,7 @@ export const deleteAlbum = async (id) => {
     console.log('Response data:', response.data);
     return response.data;
   } catch (error) {
-    console.error("Error deleting album:", error);
+    console.error('Error deleting album:', error);
     throw error;
   }
 };
@@ -60,7 +58,7 @@ export const parseAlbumLink = async (link) => {
     console.log('Response data:', response.data.albumData);
     return response.data.albumData;
   } catch (error) {
-    console.error("Error parsing link:", error);
+    console.error('Error parsing link:', error);
     throw error;
   }
-}
+};

@@ -1,16 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import '../styles/addButton.scss';
-import Star from './Star'
+import Star from './Star';
 import Heart from './Heart';
 import { createAlbum, editAlbum, parseAlbumLink } from '../http/albumApi';
-
 
 const AddButton = ({ onClick, handleReloadAlbums, editedAlbum }) => {
   const initialTrack = { order: 1, nameTrack: '', estimation: false, link: '' };
   const [isMobile, setIsMobile] = useState(window.innerWidth < 1000);
 
   const [toastMessage, setToastMessage] = useState('');
-  
+
   const [albumData, setAlbumData] = useState({
     nameAlbum: '',
     nameBand: '',
@@ -30,54 +29,58 @@ const AddButton = ({ onClick, handleReloadAlbums, editedAlbum }) => {
   const showToastMessage = (message) => {
     setToastMessage(message);
     setTimeout(() => {
-      window.$("#resToast").toast('show')
-    }, 0)
+      window.$('#resToast').toast('show');
+    }, 0);
   };
 
   const handleInputChange = (e, index) => {
     const { name, value, type, checked } = e.target;
-  
+
     if (name === 'year') {
       // Проверяем, что введенное значение состоит из цифр и не превышает 4 символов
       const isValidYear = /^\d{0,4}$/.test(value);
-  
+
       if (isValidYear || value === '') {
         setAlbumData((prevData) => ({ ...prevData, [name]: value }));
       }
-    }
-    else if (name.includes("tracks")) {
+    } else if (name.includes('tracks')) {
       const newTracks = [...albumData.tracks];
       const [trackIndex, trackField] = name.match(/\[(\d+)\]\.(\w+)/).slice(1);
-  
+
       if (trackField === 'estimation') {
         // Handle track estimation using Heart component
         newTracks[trackIndex][trackField] = checked;
       } else {
-        newTracks[trackIndex][trackField] = type === "checkbox" ? checked : value;
+        newTracks[trackIndex][trackField] = type === 'checkbox' ? checked : value;
       }
-  
+
       setAlbumData((prevData) => ({ ...prevData, tracks: newTracks }));
     } else {
-      setAlbumData((prevData) => ({ ...prevData, [name]: type === "checkbox" ? checked : value }));
+      setAlbumData((prevData) => ({ ...prevData, [name]: type === 'checkbox' ? checked : value }));
     }
-  };  
+  };
 
   const handleAddTrack = () => {
-    const newTrack = { order: albumData.tracks.length + 1, nameTrack: '', estimation: false, link: '' };
+    const newTrack = {
+      order: albumData.tracks.length + 1,
+      nameTrack: '',
+      estimation: false,
+      link: '',
+    };
     setAlbumData((prevData) => ({ ...prevData, tracks: [...prevData.tracks, newTrack] }));
   };
 
   const handleRemoveTrack = (index) => {
     const newTracks = [...albumData.tracks];
     newTracks.splice(index, 1); // Удаляем трек с указанным индексом
-  
+
     // Обновляем порядок у оставшихся треков
     newTracks.forEach((track, i) => {
       track.order = i + 1;
     });
-  
+
     setAlbumData((prevData) => ({ ...prevData, tracks: newTracks }));
-  };  
+  };
 
   const handleAddButtonClick = async () => {
     const formData = new FormData();
@@ -96,13 +99,13 @@ const AddButton = ({ onClick, handleReloadAlbums, editedAlbum }) => {
       estimation: track.estimation,
       link: track.link,
     }));
-    
-    formData.append('tracks', JSON.stringify(tracksArray));    
+
+    formData.append('tracks', JSON.stringify(tracksArray));
 
     try {
       let response;
       let actionVerb = editedAlbum ? 'edit' : 'add';
-    
+
       if (editedAlbum) {
         // If editing an album, call the editAlbum function
         response = await editAlbum(editedAlbum.id, formData);
@@ -110,16 +113,17 @@ const AddButton = ({ onClick, handleReloadAlbums, editedAlbum }) => {
         // If creating a new album, call the createAlbum function
         response = await createAlbum(formData);
       }
-    
+
       if (response) {
         showToastMessage({
           type: 'success',
           head: `Success ${actionVerb}ing!`,
           body: (
             <span>
-              Successfully {actionVerb}ed: <strong>{albumData.nameBand}</strong> - <strong>{albumData.nameAlbum}</strong>
+              Successfully {actionVerb}ed: <strong>{albumData.nameBand}</strong> -{' '}
+              <strong>{albumData.nameAlbum}</strong>
             </span>
-          )
+          ),
         });
         setAlbumData({
           nameAlbum: '',
@@ -135,12 +139,14 @@ const AddButton = ({ onClick, handleReloadAlbums, editedAlbum }) => {
         handleReloadAlbums(true);
       }
     } catch (error) {
-      showToastMessage({ 
-        type: 'error', 
-        head: `Error! [${error.message}]`, 
-        body: (editedAlbum ? `Error editing album:${albumData.nameBand}-${albumData.nameAlbum}` : 'Error adding album!') 
+      showToastMessage({
+        type: 'error',
+        head: `Error! [${error.message}]`,
+        body: editedAlbum
+          ? `Error editing album:${albumData.nameBand}-${albumData.nameAlbum}`
+          : 'Error adding album!',
       });
-    }      
+    }
   };
 
   const handleModalClose = () => {
@@ -157,7 +163,7 @@ const AddButton = ({ onClick, handleReloadAlbums, editedAlbum }) => {
     });
     handleReloadAlbums(true);
     // Установить значение editedAlbum в null
-    if(editedAlbum) onClick(); // Это предполагает, что onClick также устанавливает editedAlbum в null
+    if (editedAlbum) onClick(); // Это предполагает, что onClick также устанавливает editedAlbum в null
   };
 
   const parseAlbumData = () => {
@@ -169,28 +175,28 @@ const AddButton = ({ onClick, handleReloadAlbums, editedAlbum }) => {
 
     // Call parseAlbumLink function and handle the response
     parseAlbumLink(link)
-      .then(albumInfo => {
+      .then((albumInfo) => {
         if (!albumInfo) {
           showToastMessage('Failed to fetch album data');
           return;
         }
         // Update albumData state with fetched album info
-        setAlbumData(prevData => ({
+        setAlbumData((prevData) => ({
           ...prevData,
           nameAlbum: albumInfo.albumName,
           nameBand: albumInfo.bandName,
           review: albumInfo.cover,
-          year:  albumInfo.year,
-          tracks:  albumInfo.tracks.map((track, index) => ({
+          year: albumInfo.year,
+          tracks: albumInfo.tracks.map((track, index) => ({
             order: index + 1,
             nameTrack: track.trackName,
             link: track.trackLink,
-            estimation: false
-          }))
+            estimation: false,
+          })),
           // Update other fields accordingly
         }));
       })
-      .catch(error => {
+      .catch((error) => {
         console.error('Error parsing album link:', error);
         showToastMessage('Error parsing album link');
       });
@@ -235,25 +241,36 @@ const AddButton = ({ onClick, handleReloadAlbums, editedAlbum }) => {
 
   return (
     <>
-      { !editedAlbum && 
-        <button className="neumorphic" onClick={onClick} data-bs-toggle="modal" data-bs-target="#exampleModal">
+      {!editedAlbum && (
+        <button
+          className="neumorphic"
+          onClick={onClick}
+          data-bs-toggle="modal"
+          data-bs-target="#exampleModal"
+        >
           <i className="fas fa-plus"></i>
         </button>
-      }
-      <div className="modal fade" id="exampleModal" tabIndex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      )}
+      <div
+        className="modal fade"
+        id="exampleModal"
+        tabIndex="-1"
+        aria-labelledby="exampleModalLabel"
+        aria-hidden="true"
+      >
         <div className="modal-dialog modal-xl">
           <div className="modal-content">
             <div className="modal-header">
               <h1 className="modal-title fs-5" id="exampleModalLabel">
                 Adding new album
               </h1>
-              <button 
-                type="button" 
-                className="btn-close" 
-                data-bs-dismiss="modal" 
-                aria-label="Close" 
-                onClick={handleModalClose}>
-              </button>
+              <button
+                type="button"
+                className="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="Close"
+                onClick={handleModalClose}
+              ></button>
             </div>
             <div className="modal-body d-flex">
               {/* Left side - Inputs */}
@@ -310,27 +327,22 @@ const AddButton = ({ onClick, handleReloadAlbums, editedAlbum }) => {
                   />
                 </div>
                 <div className="mb-3">
-                  <button 
-                    type="button" 
-                    style={{width:"70%", marginLeft:"auto"}}
-                    className="btn btn-primary"
-                    onClick={parseAlbumData}
-                  >
-                      GET INFO FROM SPOTIFY
+                  <button type="button" className="btn btn-primary" onClick={parseAlbumData}>
+                    GET INFO FROM SPOTIFY
                   </button>
                 </div>
               </div>
-  
+
               {/* Right side - Other elements */}
               <div className={`p-3 ${isMobile ? '' : 'w-50'} rightInputs`}>
-                <div className='year_estimation_favorite'>
-                  <div className="mb-3 row align-items-center">
+                <div className="year_estimation_favorite">
+                  <div className="mb-3 row align-items-center releaseYear">
                     <label htmlFor="releaseYear" className="col-sm-4 col-form-label">
                       Release Year
                     </label>
                     <div className="col-sm-3">
                       <input
-                        style={{textAlign: 'center'}}
+                        style={{ textAlign: 'center' }}
                         type="text"
                         className="form-control"
                         id="year"
@@ -374,14 +386,14 @@ const AddButton = ({ onClick, handleReloadAlbums, editedAlbum }) => {
                     onChange={(e) => setAlbumData({ ...albumData, cover: e.target.files[0] })}
                   />
                 </div>
-  
+
                 {/* Tracks */}
                 {albumData.tracks.map((track, index) => (
                   <div key={index} className="mb-3">
                     <label className="form-label">Track {index + 1}</label>
                     <div className="d-flex">
                       <input
-                        style={{width:'15%', textAlign: 'center'}}
+                        style={{ width: '15%', textAlign: 'center' }}
                         type="text"
                         className="form-control me-2"
                         placeholder="Order"
@@ -397,9 +409,14 @@ const AddButton = ({ onClick, handleReloadAlbums, editedAlbum }) => {
                         value={track.nameTrack}
                         onChange={(e) => handleInputChange(e, index)}
                       />
-                      <Heart 
+                      <Heart
                         selected={track.estimation}
-                        onChange={(value) => handleInputChange({ target: { name: `tracks[${index}].estimation`, checked: value } }, index)}
+                        onChange={(value) =>
+                          handleInputChange(
+                            { target: { name: `tracks[${index}].estimation`, checked: value } },
+                            index
+                          )
+                        }
                         affiliation={`track`}
                         index={index}
                       />
@@ -427,12 +444,22 @@ const AddButton = ({ onClick, handleReloadAlbums, editedAlbum }) => {
                 </button>
               </div>
             </div>
-  
+
             <div className="modal-footer">
-              <button type="button" className="btn btn-secondary" data-bs-dismiss="modal" onClick={handleModalClose}>
+              <button
+                type="button"
+                className="btn btn-secondary"
+                data-bs-dismiss="modal"
+                onClick={handleModalClose}
+              >
                 Close
               </button>
-              <button type="button" className="btn btn-primary" data-bs-dismiss="modal" onClick={handleAddButtonClick}>
+              <button
+                type="button"
+                className="btn btn-primary"
+                data-bs-dismiss="modal"
+                onClick={handleAddButtonClick}
+              >
                 {editedAlbum ? 'Save' : 'Add'}
               </button>
             </div>
@@ -440,18 +467,23 @@ const AddButton = ({ onClick, handleReloadAlbums, editedAlbum }) => {
         </div>
       </div>
       {/* Toast Message (edit/add)*/}
-      <div className="position-fixed bottom-0 end-0 p-3" style={{zIndex: "11"}}>
-        <div 
-          className='toast'
+      <div className="position-fixed bottom-0 end-0 p-3" style={{ zIndex: '11' }}>
+        <div
+          className="toast"
           id="resToast"
-          role="alert" 
-          aria-live="assertive" 
-          aria-atomic="true" 
-          style={{ animation: "slideInRight 0.5s forwards" }}
-          >
+          role="alert"
+          aria-live="assertive"
+          aria-atomic="true"
+          style={{ animation: 'slideInRight 0.5s forwards' }}
+        >
           <div className={`toast-header ${toastMessage.type === 'error' ? 'error' : 'success'}`}>
             <strong className="me-auto">{toastMessage.head}</strong>
-            <button type="button" className="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            <button
+              type="button"
+              className="btn-close"
+              data-bs-dismiss="toast"
+              aria-label="Close"
+            ></button>
           </div>
           <div className={`toast-body ${toastMessage.type === 'error' ? 'error' : 'success'}`}>
             {toastMessage.body}
@@ -459,8 +491,7 @@ const AddButton = ({ onClick, handleReloadAlbums, editedAlbum }) => {
         </div>
       </div>
     </>
-  );  
-
+  );
 };
 
 export default AddButton;

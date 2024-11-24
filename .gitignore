@@ -13,3 +13,5 @@ dist/
 # Игнорировать дополнительные папки
 client/src/font/
 server/static/
+logs/
+*.log

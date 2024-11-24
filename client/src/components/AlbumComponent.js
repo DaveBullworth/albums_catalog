@@ -6,7 +6,7 @@ import '../styles/albumComponent.scss';
 import '../http/albumApi';
 import { fetchAlbums, fetchOneAlbum, deleteAlbum } from '../http/albumApi';
 
-const AlbumComponent = ({reload, handleReloadAlbums, filters}) => {
+const AlbumComponent = ({ reload, handleReloadAlbums, filters }) => {
   const [albumData, setAlbumData] = useState([]);
   const [selectedAlbum, setSelectedAlbum] = useState(null);
   const [expandedCardIndex, setExpandedCardIndex] = useState(null);
@@ -18,7 +18,7 @@ const AlbumComponent = ({reload, handleReloadAlbums, filters}) => {
   const [toastMessage, setToastMessage] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const PAGE_SIZE = 4;
+  const PAGE_SIZE = 3;
 
   const albumInfoRef = useRef(null);
 
@@ -35,11 +35,11 @@ const AlbumComponent = ({reload, handleReloadAlbums, filters}) => {
         setAlbumInfoHeight(height);
       }
     }, 100);
-  
+
     if (reload) {
       handleCollapse();
       fetchData();
-      handleReloadAlbums(false); 
+      handleReloadAlbums(false);
     }
   }, [selectedAlbum, reload]);
 
@@ -50,15 +50,17 @@ const AlbumComponent = ({reload, handleReloadAlbums, filters}) => {
       window.$('#deleteModal').modal('hide');
     }
   }, [isDeleteModalOpen]);
-  
+
   useEffect(() => {
     fetchData();
+    setSelectedAlbum(null);
+    setExpandedCardIndex(null);
   }, [currentPage]);
 
   useEffect(() => {
-    setCurrentPage(1)
+    setCurrentPage(1);
   }, [filters]);
-  
+
   const handleCardClick = (albumId, index) => {
     if (expandedCardIndex === index) {
       // Нажатие на уже раскрытую карточку должно закрывать ее
@@ -95,21 +97,23 @@ const AlbumComponent = ({reload, handleReloadAlbums, filters}) => {
         head: `Success!`,
         body: (
           <span>
-            Successfully deleted: <strong>{_deleteAlbum.nameBand}</strong> - <strong>{_deleteAlbum.nameAlbum}</strong>
+            Successfully deleted: <strong>{_deleteAlbum.nameBand}</strong> -{' '}
+            <strong>{_deleteAlbum.nameAlbum}</strong>
           </span>
-        )
+        ),
       });
       closeDeleteModal();
-      handleReloadAlbums(true); 
+      handleReloadAlbums(true);
     } catch (error) {
       showToastMessage({
         type: 'error',
         head: `Error! [${error.message}]`,
         body: (
           <span>
-            Unable to deleted: <strong>{_deleteAlbum.nameBand}</strong> - <strong>{_deleteAlbum.nameAlbum}</strong>
+            Unable to deleted: <strong>{_deleteAlbum.nameBand}</strong> -{' '}
+            <strong>{_deleteAlbum.nameAlbum}</strong>
           </span>
-        )
+        ),
       });
       closeDeleteModal();
     }
@@ -130,8 +134,8 @@ const AlbumComponent = ({reload, handleReloadAlbums, filters}) => {
   const showToastMessage = (message) => {
     setToastMessage(message);
     setTimeout(() => {
-      window.$("#delToast").toast('show')
-    }, 0)
+      window.$('#delToast').toast('show');
+    }, 0);
   };
 
   const handlePageChange = (pageNumber) => {
@@ -154,6 +158,10 @@ const AlbumComponent = ({reload, handleReloadAlbums, filters}) => {
 
   return (
     <div className="list">
+      {/* Pagination */}
+      <nav aria-label="Page navigation example">
+        <ul className="pagination justify-content-center">{renderPagination()}</ul>
+      </nav>
       {albumData.map((album, index) => (
         <React.Fragment key={album.id}>
           <Card
@@ -173,24 +181,19 @@ const AlbumComponent = ({reload, handleReloadAlbums, filters}) => {
             }}
             isExpanded={expandedCardIndex === index}
           />
-          <div className={`album-info ${expandedCardIndex === index ? 'expanded' : ''}`} 
-              style={{ maxHeight: expandedCardIndex === index ? albumInfoHeight + 'px' : '0',
-              transition: `max-height 0.3s ease-out` }}>
+          <div
+            className={`album-info ${expandedCardIndex === index ? 'expanded' : ''}`}
+            style={{
+              maxHeight: expandedCardIndex === index ? albumInfoHeight + 'px' : '0',
+              transition: `max-height 0.3s ease-out`,
+            }}
+          >
             {expandedCardIndex === index && (
-              <AlbumInfo
-                albumData={selectedAlbum}
-                ref={albumInfoRef}
-              />
+              <AlbumInfo albumData={selectedAlbum} ref={albumInfoRef} />
             )}
           </div>
         </React.Fragment>
       ))}
-      {/* Pagination */}
-      <nav aria-label="Page navigation example">
-        <ul className="pagination justify-content-center">
-          {renderPagination()}
-        </ul>
-      </nav>
       {/* Modal for Editing Album */}
       {isEditModalOpen && (
         <AddButton
@@ -200,57 +203,83 @@ const AlbumComponent = ({reload, handleReloadAlbums, filters}) => {
         />
       )}
       {/* Modal for Deleting Album */}
-      <div className="modal fade" id="deleteModal" tabIndex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+      <div
+        className="modal fade"
+        id="deleteModal"
+        tabIndex="-1"
+        role="dialog"
+        aria-labelledby="deleteModalLabel"
+        aria-hidden="true"
+      >
         <div className="modal-dialog" role="document">
           <div className="modal-content">
             <div className="modal-header">
-              <h5 className="modal-title" id="deleteModalLabel">Delete Album</h5>
-              <button 
-                type="button" 
-                className="close" 
-                data-dismiss="modal" 
-                aria-label="Close" 
+              <h5 className="modal-title" id="deleteModalLabel">
+                Delete Album
+              </h5>
+              <button
+                type="button"
+                className="close"
+                data-dismiss="modal"
+                aria-label="Close"
                 onClick={closeDeleteModal}
               >
                 <span aria-hidden="true">
-                  <i 
-                    style={{ color: 'red' }} 
-                    className="bi bi-x-circle-fill" 
-                    onMouseOver={(e) => e.target.className = 'bi bi-x-circle'} 
-                    onMouseOut={(e) => e.target.className = 'bi bi-x-circle-fill'}>
-                  </i>
+                  <i
+                    style={{ color: 'red' }}
+                    className="bi bi-x-circle-fill"
+                    onMouseOver={(e) => (e.target.className = 'bi bi-x-circle')}
+                    onMouseOut={(e) => (e.target.className = 'bi bi-x-circle-fill')}
+                  ></i>
                 </span>
               </button>
             </div>
             <div className="modal-body">
               <p>Are you sure you want to delete</p>
-              <p><b>{` ${_deleteAlbum?.nameBand} - ${_deleteAlbum?.nameAlbum} (${_deleteAlbum?.year})`}</b> album?</p>
-              <img 
-                src={_deleteAlbum && process.env.REACT_APP_API_URL + _deleteAlbum?.cover} 
+              <p>
+                <b>{` ${_deleteAlbum?.nameBand} - ${_deleteAlbum?.nameAlbum} (${_deleteAlbum?.year})`}</b>{' '}
+                album?
+              </p>
+              <img
+                src={_deleteAlbum && process.env.REACT_APP_API_URL + _deleteAlbum?.cover}
                 alt="Album Cover"
                 style={{ width: '200px', height: '200px', marginTop: '10px' }}
               />
             </div>
-            <div className="modal-footer" style={{justifyContent: 'center', gap: '40px'}}>
-              <button type="button" className="btn btn-secondary" data-dismiss="modal" onClick={closeDeleteModal}>Cancel</button>
-              <button type="button" className="btn btn-danger" onClick={handleDeleteConfirm}>Delete</button>
+            <div className="modal-footer" style={{ justifyContent: 'center', gap: '40px' }}>
+              <button
+                type="button"
+                className="btn btn-secondary"
+                data-dismiss="modal"
+                onClick={closeDeleteModal}
+              >
+                Cancel
+              </button>
+              <button type="button" className="btn btn-danger" onClick={handleDeleteConfirm}>
+                Delete
+              </button>
             </div>
           </div>
         </div>
       </div>
       {/* Toast Message (delete)*/}
-      <div className="position-fixed bottom-0 end-0 p-3" style={{zIndex: "11"}}>
-        <div 
-          className='toast'
+      <div className="position-fixed bottom-0 end-0 p-3" style={{ zIndex: '11' }}>
+        <div
+          className="toast"
           id="delToast"
-          role="alert" 
-          aria-live="assertive" 
-          aria-atomic="true" 
-          style={{ animation: "slideInRight 0.5s forwards" }}
-          >
+          role="alert"
+          aria-live="assertive"
+          aria-atomic="true"
+          style={{ animation: 'slideInRight 0.5s forwards' }}
+        >
           <div className={`toast-header ${toastMessage.type === 'error' ? 'error' : 'success'}`}>
             <strong className="me-auto">{toastMessage.head}</strong>
-            <button type="button" className="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            <button
+              type="button"
+              className="btn-close"
+              data-bs-dismiss="toast"
+              aria-label="Close"
+            />
           </div>
           <div className={`toast-body ${toastMessage.type === 'error' ? 'error' : 'success'}`}>
             {toastMessage.body}

@@ -1,70 +1,69 @@
 body {
-    background: #efefef;
-  }
-  
+  background: #efefef;
+}
+
 .list {
-    margin: 30px auto;
-    width: 90%;
+  margin: 30px auto;
+  width: 90%;
 }
 
 .card {
-    background: #fff;
-    cursor: pointer;
-    box-shadow: 0 1px 4px 0 #666;
-    height: 125px;
-    transition: all 0.3s ease;
+  background: #fff;
+  cursor: pointer;
+  box-shadow: 0 1px 4px 0 #666;
+  height: 125px;
+  transition: all 0.3s ease;
 }
 
 .album-info {
-    border-radius: 5px;
-    margin-bottom: 10px;
-    box-shadow: 0 1px 4px 0 #666;
-    background: #fff;
-    width: 100%;
-    overflow: hidden;
-    max-height: fit-content;
+  border-radius: 5px;
+  margin-bottom: 10px;
+  box-shadow: 0 1px 4px 0 #666;
+  background: #fff;
+  width: 100%;
+  overflow: hidden;
+  max-height: fit-content;
 }
-
 
 ///TOAST
-.toast-header.success{
-    color: white;
-    background-color: rgba(green, .85);;
+.toast-header.success {
+  color: white;
+  background-color: rgba(green, 0.85);
 }
 
-.toast-header.error{
-    color: white;
-    background-color: rgba(red, .85);;
+.toast-header.error {
+  color: white;
+  background-color: rgba(red, 0.85);
 }
 
-.toast-body.success{
-    color: black;
-    background-color: rgba(green, .15);;
+.toast-body.success {
+  color: black;
+  background-color: rgba(green, 0.15);
 }
 
-.toast-body.error{
-    color: black;
-    background-color: rgba(red, .15);;
+.toast-body.error {
+  color: black;
+  background-color: rgba(red, 0.15);
 }
 
 @keyframes slideInRight {
-    from {
-        transform: translateX(100%);
-        opacity: 0;
-    }
-    to {
-        transform: translateX(0);
-        opacity: 1;
-    }
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
 }
 
 /* Медиазапрос для ширины экрана меньше 1250px */
 @media (max-width: 1280px) {
-    .list{
-        margin: 30px 0; 
-        width: 105%;
-    }
-    .card{
-        height: 80px;
-    }
+  .list {
+    margin: 30px 0;
+    width: 105%;
+  }
+  .card {
+    height: 80px;
+  }
 }
