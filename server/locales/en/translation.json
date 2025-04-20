@@ -1,0 +1,57 @@
+{
+  "user": {
+    "registration": {
+      "sameLogin": "User with this login already exists",
+      "internalError": "Internal server error"
+    },
+    "check": {
+      "unauthorized": "You are not authorized. Please log in again."
+    },
+    "login": {
+      "invalidCredentials": "Invalid credentials",
+      "internalError": "Internal server error"
+    },
+    "logout": {
+      "success": "You have successfully logged out of the system",
+      "internalError": "Internal server error"
+    },
+    "getOne": {
+      "notFound": "User not found",
+      "internalError": "Internal server error"
+    },
+    "update": {
+      "notFound": "User not found",
+      "sameLogin": "User with this login already exists",
+      "invalidPassword": "Invalid password",
+      "internalError": "Internal server error"
+    },
+    "delete": {
+      "notFound": "User not found",
+      "internalError": "Internal server error",
+      "success": "User successfully deleted"
+    }
+  },
+  "album": {
+    "create": {
+      "internalError": "Internal server error"
+    },
+    "getOne": {
+      "notFound": "Album not found",
+      "forbidden": "Access denied",
+      "internalError": "Internal server error"
+    },
+    "getPage": {
+      "internalError": "Internal server error"
+    },
+    "delete": {
+      "notFound": "Album not found",
+      "internalError": "Internal server error",
+      "success": "Album successfully deleted"
+    },
+    "update": {
+      "notFound": "Album not found",
+      "forbidden": "Access denied",
+      "internalError": "Internal server error"
+    }
+  }
+}

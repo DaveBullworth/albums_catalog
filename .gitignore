@@ -15,3 +15,4 @@ client/src/font/
 server/static/
 logs/
 *.log
+*.txt

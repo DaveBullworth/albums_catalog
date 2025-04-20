@@ -1,5 +1,5 @@
 const { Album, Track } = require('../models/models');
-const { ApiError } = require('../error/apiError');
+const ApiError = require('../error/apiError');
 const uuid = require('uuid');
 const path = require('path');
 const { Op } = require('sequelize');
@@ -23,6 +23,7 @@ class AlbumController {
         estimation,
         favorite,
         link,
+        userId: req.user.id,
       });
 
       if (tracks) {
@@ -41,7 +42,7 @@ class AlbumController {
       return res.json(album);
     } catch (error) {
       logError(error, 'AlbumController: ошибка при создании альбома');
-      next(error);
+      next(ApiError.internal(req.t('album.create.internalError')));
     }
   }
 
@@ -54,13 +55,15 @@ class AlbumController {
       });
 
       if (!album) {
-        throw ApiError.badRequest('Album not found');
+        return next(ApiError.notFound(req.t('album.getOne.notFound')));
+      } else if (album.userId !== req.user.id) {
+        return next(ApiError.forbidden(req.t('album.getOne.forbidden')));
       }
 
       return res.json(album);
     } catch (error) {
       logError(error, 'AlbumController: ошибка при получении альбома');
-      next(error);
+      next(ApiError.internal(req.t('album.getOne.internalError')));
     }
   }
 
@@ -73,7 +76,9 @@ class AlbumController {
       let offset = page * limit - limit;
       let albums;
 
-      const conditions = [];
+      const conditions = [
+        { userId: req.user.id }, // Always filter by current user
+      ];
 
       if (filters.yearA || filters.yearB) {
         const yearCondition = {};
@@ -102,7 +107,7 @@ class AlbumController {
         conditions.push({ favorite: filters.favorite });
       }
 
-      const whereClause = conditions.length > 0 ? { [Op.or]: conditions } : {};
+      const whereClause = conditions.length > 0 ? { [Op.and]: conditions } : {};
       let order = [['id', 'ASC']]; // Default order by ID
 
       if (filters.sortYear) {
@@ -141,7 +146,7 @@ class AlbumController {
       return res.json(albums);
     } catch (error) {
       logError(error, 'AlbumController: ошибка при получении списка альбомов');
-      next(error);
+      next(ApiError.internal(req.t('album.getPage.internalError')));
     }
   }
 
@@ -152,7 +157,7 @@ class AlbumController {
       const album = await Album.findByPk(id);
 
       if (!album) {
-        throw ApiError.badRequest('Album not found');
+        next(ApiError.badRequest(req.t('album.delete.notFound')));
       }
 
       // Get the cover filename
@@ -167,10 +172,10 @@ class AlbumController {
         fs.unlinkSync(coverFilePath);
       }
 
-      return res.json({ message: 'Album deleted successfully' });
+      return res.json({ message: req.t('album.delete.success') });
     } catch (error) {
       logError(error, 'AlbumController: ошибка при удалении альбома');
-      next(error);
+      next(ApiError.internal(req.t('album.delete.internalError')));
     }
   }
 
@@ -185,7 +190,9 @@ class AlbumController {
       const album = await Album.findByPk(id);
 
       if (!album) {
-        throw ApiError.badRequest('Album Not Found!');
+        next(ApiError.badRequest(req.t('album.update.notFound')));
+      } else if (album.userId !== req.user.id) {
+        next(ApiError.forbidden(req.t('album.update.forbidden')));
       }
 
       const oldCoverFileName = album.cover;
@@ -249,7 +256,7 @@ class AlbumController {
       return res.json(album);
     } catch (error) {
       logError(error, 'AlbumController: ошибка при обновлении альбома');
-      next(error);
+      next(ApiError.internal(req.t('album.update.internalError')));
     }
   }
 }

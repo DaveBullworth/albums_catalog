@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
-import { setDominantColor } from '../store';
+import { setDominantColor } from '../slices/albumSlice';
 import ColorThief from 'colorthief';
 import tinycolor from 'tinycolor2';
 import '../styles/card.scss';

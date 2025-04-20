@@ -1,70 +1,38 @@
-import React, { useState } from 'react';
-import AddButton from './components/AddButton';
-import AlbumComponent from './components/AlbumComponent';
-import NavBar from './components/NavBar';
-import './styles/reset.scss';
-import './styles/app.scss';
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import LoginPage from './components/LoginPage';
+import AlbumsPage from './components/AlbumsPage';
+import { AuthProvider, useAuth } from './components/AuthContext';
+
+const PrivateRoute = ({ children }) => {
+  const { isAuth, isLoading } = useAuth();
+
+  if (isLoading) {
+    return <div>Загрузка...</div>;
+  }
+
+  return isAuth ? children : <Navigate to="/login" />;
+};
 
 function App() {
-  const [reloadAlbums, setReloadAlbums] = useState(true);
-  const [filters, setFilters] = useState({
-    yearA: '',
-    yearB: '',
-    estimation: false,
-    favorite: false,
-    nameBand: '',
-    nameAlbum: '',
-    sortYear: false,
-    sortBandName: false,
-    sortAlbumName: false,
-  });
-  const [reset, setReset] = useState(false);
-
-  const handleReloadAlbums = (shouldReload) => {
-    setReloadAlbums(shouldReload);
-  };
-  const handleResetFilters = () => {
-    setFilters({
-      yearA: '',
-      yearB: '',
-      estimation: false,
-      favorite: false,
-      nameBand: '',
-      nameAlbum: '',
-      sortYear: false,
-      sortBandName: false,
-      sortAlbumName: false,
-    });
-    setReset(!reset);
-    handleReloadAlbums(true);
-  };
-
   return (
-    <div className="app-container">
-      <div className="filter-container">
-        <NavBar
-          filters={filters}
-          setFilters={setFilters}
-          handleReloadAlbums={handleReloadAlbums}
-          reset={reset}
-        />
-        <button
-          type="button"
-          className="btn btn-secondary reset-filters"
-          onClick={handleResetFilters}
-        >
-          Reset
-        </button>
-      </div>
-      <div className="content-container">
-        <AlbumComponent
-          reload={reloadAlbums}
-          handleReloadAlbums={handleReloadAlbums}
-          filters={filters}
-        />
-        <AddButton handleReloadAlbums={handleReloadAlbums} />
-      </div>
-    </div>
+    <AuthProvider>
+      <Router>
+        <Routes>
+          <Route path="/login" element={<LoginPage />} />
+          <Route
+            path="/albums"
+            element={
+              <PrivateRoute>
+                <AlbumsPage />
+              </PrivateRoute>
+            }
+          />
+          <Route path="/" element={<Navigate to="/login" />} />
+        </Routes>
+      </Router>
+    </AuthProvider>
   );
 }
 
