@@ -2,9 +2,8 @@ import React, { useLayoutEffect, useState, useRef, useEffect } from 'react';
 import AddButton from './AddButton';
 import Card from './Card';
 import AlbumInfo from './AlbumInfo';
-import '../styles/albumComponent.scss';
-import '../http/albumApi';
 import { fetchAlbums, fetchOneAlbum, deleteAlbum } from '../http/albumApi';
+import '../styles/albumComponent.scss';
 
 const AlbumComponent = ({ reload, handleReloadAlbums, filters }) => {
   const [albumData, setAlbumData] = useState([]);

@@ -82,7 +82,9 @@ function AlbumsPage() {
           handleReloadAlbums={handleReloadAlbums}
           filters={filters}
         />
-        <AddButton handleReloadAlbums={handleReloadAlbums} />
+        <div className="add-btn-container">
+          <AddButton handleReloadAlbums={handleReloadAlbums} />
+        </div>
       </div>
     </div>
   );

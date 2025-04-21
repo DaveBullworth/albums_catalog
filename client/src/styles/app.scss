@@ -1,9 +1,11 @@
-body {
-  margin-right: 5%;
-  display: flex;
-  align-items: flex-start;
-  justify-content: end;
+html,
+body,
+#root {
+  width: 100%;
   min-height: 100vh;
+}
+
+body {
   background-color: #e5e9f4;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -11,7 +13,9 @@ body {
 }
 
 .app-container {
-  width: 60rem;
+  display: flex;
+  justify-content: end;
+  height: 100vh;
   margin: 0 auto;
   .logout-button {
     position: absolute;
@@ -27,6 +31,14 @@ body {
     z-index: 10;
     transition: background-color 0.3s;
 
+    @media (max-width: 1280px) {
+      position: sticky;
+      top: 0;
+      right: unset;
+      margin-top: 0.5rem;
+      margin-bottom: 0.5rem;
+    }
+
     &:hover {
       background-color: #c82333;
     }
@@ -34,10 +46,20 @@ body {
 }
 
 .content-container {
+  width: 100%;
   text-align: center;
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: end;
+  .add-btn-container {
+    display: flex;
+    margin: 0 20px 2rem 20px;
+    width: calc(100% - 19rem);
+    max-width: 100rem;
+    justify-content: center;
+    align-items: center;
+    min-height: 3rem;
+  }
 }
 
 .filter-container {
@@ -57,12 +79,20 @@ body {
     flex-direction: column;
     width: 15rem;
     position: static;
-    margin: 2rem auto;
+    margin-bottom: 1rem;
   }
 
   .app-container {
-    width: 95%;
-    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: start;
+    .content-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
   }
 }
 

@@ -130,7 +130,7 @@ body {
 
     &:nth-child(1) {
       min-width: 35px;
-      max-width: 35px;
+      max-width: 45px;
     }
 
     &:nth-child(2) {
@@ -139,8 +139,7 @@ body {
     }
 
     &:nth-child(3) {
-      min-width: 200px;
-      max-width: 200px;
+      min-width: 250px;
     }
 
     &:nth-child(4) {
@@ -165,5 +164,32 @@ body {
 
   .bi-triangle-fill {
     font-size: 12px;
+  }
+}
+
+@media (max-width: 500px) {
+  .block {
+    .year,
+    .albumName {
+      font-size: 0.7em;
+    }
+
+    .number,
+    .bandName {
+      font-size: 0.6em;
+    }
+
+    .icon1,
+    .icon2 {
+      font-size: 0.5em;
+    }
+
+    &:nth-child(1) {
+      min-width: 25px;
+    }
+
+    &:nth-child(3) {
+      min-width: 150px;
+    }
   }
 }

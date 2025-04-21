@@ -26,7 +26,7 @@ const AlbumInfo = forwardRef(({ albumData }, ref) => {
               <th scope="col" style={innerBlockStyle}>
                 #
               </th>
-              <th scope="col" style={innerBlockStyle}>
+              <th scope="col" style={{ ...innerBlockStyle, textAlign: 'left' }}>
                 Name
               </th>
               <th scope="col" style={innerBlockStyle}>
@@ -41,7 +41,7 @@ const AlbumInfo = forwardRef(({ albumData }, ref) => {
                   <th scope="row" style={innerBlockStyle}>
                     {track.order}
                   </th>
-                  <td style={innerBlockStyle}>
+                  <td style={{ ...innerBlockStyle, textAlign: 'left' }}>
                     <a
                       href={track.link}
                       target="_blank"

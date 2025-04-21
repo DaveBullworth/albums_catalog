@@ -2,7 +2,7 @@ import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
   user: null, // Данные о пользователе
-  isAuth: false, // Статус авторизации
+  isAuth: null, // Статус авторизации
 };
 
 const userSlice = createSlice({
