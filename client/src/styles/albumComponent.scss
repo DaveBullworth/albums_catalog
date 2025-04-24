@@ -26,6 +26,19 @@ body {
   max-height: fit-content;
 }
 
+.delete-modal {
+  .modal-header {
+    button {
+      background-color: white;
+    }
+  }
+  .modal-body {
+    b {
+      color: red;
+    }
+  }
+}
+
 ///TOAST
 .toast-header.success {
   color: white;

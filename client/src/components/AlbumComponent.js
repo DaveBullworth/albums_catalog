@@ -1,4 +1,5 @@
 import React, { useLayoutEffect, useState, useRef, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import AddButton from './AddButton';
 import Card from './Card';
 import AlbumInfo from './AlbumInfo';
@@ -6,6 +7,7 @@ import { fetchAlbums, fetchOneAlbum, deleteAlbum } from '../http/albumApi';
 import '../styles/albumComponent.scss';
 
 const AlbumComponent = ({ reload, handleReloadAlbums, filters }) => {
+  const { t } = useTranslation();
   const [albumData, setAlbumData] = useState([]);
   const [selectedAlbum, setSelectedAlbum] = useState(null);
   const [expandedCardIndex, setExpandedCardIndex] = useState(null);
@@ -22,9 +24,17 @@ const AlbumComponent = ({ reload, handleReloadAlbums, filters }) => {
   const albumInfoRef = useRef(null);
 
   const fetchData = async () => {
-    const data = await fetchAlbums(currentPage, PAGE_SIZE, filters);
-    setTotalPages(Math.ceil(data.count / PAGE_SIZE));
-    setAlbumData(data.rows);
+    try {
+      const data = await fetchAlbums(currentPage, PAGE_SIZE, filters);
+      setTotalPages(Math.ceil(data.count / PAGE_SIZE));
+      setAlbumData(data.rows);
+    } catch (error) {
+      showToastMessage({
+        type: 'error',
+        head: t('albumComponent.fetchErrorHead'),
+        body: error.message || t('albumComponent.fetchErrorBody'),
+      });
+    }
   };
 
   useLayoutEffect(() => {
@@ -73,10 +83,16 @@ const AlbumComponent = ({ reload, handleReloadAlbums, filters }) => {
 
   const handleExpand = async (albumId, index) => {
     setExpandedCardIndex(index);
-    // Получаем данные альбома для выбранной карточки
-    await fetchOneAlbum(albumId).then((data) => {
+    try {
+      const data = await fetchOneAlbum(albumId);
       setSelectedAlbum(data);
-    });
+    } catch (error) {
+      showToastMessage({
+        type: 'error',
+        head: t('albumComponent.fetchOneErrorHead'),
+        body: error.message || t('albumComponent.fetchErrorBody'),
+      });
+    }
   };
 
   const handleCollapse = () => {
@@ -93,10 +109,10 @@ const AlbumComponent = ({ reload, handleReloadAlbums, filters }) => {
       await deleteAlbum(_deleteAlbum.id);
       showToastMessage({
         type: 'success',
-        head: `Success!`,
+        head: t('albumComponent.successHeadDelete'),
         body: (
           <span>
-            Successfully deleted: <strong>{_deleteAlbum.nameBand}</strong> -{' '}
+            {t('albumComponent.successBodyDelete')} <strong>{_deleteAlbum.nameBand}</strong> -{' '}
             <strong>{_deleteAlbum.nameAlbum}</strong>
           </span>
         ),
@@ -106,10 +122,10 @@ const AlbumComponent = ({ reload, handleReloadAlbums, filters }) => {
     } catch (error) {
       showToastMessage({
         type: 'error',
-        head: `Error! [${error.message}]`,
+        head: t('albumComponent.errorHeadDelete'),
         body: (
           <span>
-            Unable to deleted: <strong>{_deleteAlbum.nameBand}</strong> -{' '}
+            {t('albumComponent.errorBodyDelete')} <strong>{_deleteAlbum.nameBand}</strong> -{' '}
             <strong>{_deleteAlbum.nameAlbum}</strong>
           </span>
         ),
@@ -210,11 +226,11 @@ const AlbumComponent = ({ reload, handleReloadAlbums, filters }) => {
         aria-labelledby="deleteModalLabel"
         aria-hidden="true"
       >
-        <div className="modal-dialog" role="document">
+        <div className="modal-dialog  delete-modal" role="document">
           <div className="modal-content">
             <div className="modal-header">
               <h5 className="modal-title" id="deleteModalLabel">
-                Delete Album
+                {t('albumComponent.deleteAlbumTitle')}
               </h5>
               <button
                 type="button"
@@ -234,14 +250,13 @@ const AlbumComponent = ({ reload, handleReloadAlbums, filters }) => {
               </button>
             </div>
             <div className="modal-body">
-              <p>Are you sure you want to delete</p>
+              <p>{t('albumComponent.deleteConfirmation')}</p>
               <p>
                 <b>{` ${_deleteAlbum?.nameBand} - ${_deleteAlbum?.nameAlbum} (${_deleteAlbum?.year})`}</b>{' '}
-                album?
               </p>
               <img
                 src={_deleteAlbum && process.env.REACT_APP_API_URL + _deleteAlbum?.cover}
-                alt="Album Cover"
+                alt={t('albumComponent.albumCover')}
                 style={{ width: '200px', height: '200px', marginTop: '10px' }}
               />
             </div>
@@ -252,10 +267,10 @@ const AlbumComponent = ({ reload, handleReloadAlbums, filters }) => {
                 data-dismiss="modal"
                 onClick={closeDeleteModal}
               >
-                Cancel
+                {t('albumComponent.cancel')}
               </button>
               <button type="button" className="btn btn-danger" onClick={handleDeleteConfirm}>
-                Delete
+                {t('albumComponent.delete')}
               </button>
             </div>
           </div>

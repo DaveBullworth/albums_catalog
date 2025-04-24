@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import '../styles/addButton.scss';
 import Star from './Star';
 import Heart from './Heart';
 import { createAlbum, editAlbum, parseAlbumLink } from '../http/albumApi';
 
 const AddButton = ({ onClick, handleReloadAlbums, editedAlbum }) => {
+  const { t } = useTranslation();
   const initialTrack = { order: 1, nameTrack: '', estimation: false, link: '' };
   const [isMobile, setIsMobile] = useState(window.innerWidth < 1000);
 
@@ -117,11 +119,13 @@ const AddButton = ({ onClick, handleReloadAlbums, editedAlbum }) => {
       if (response) {
         showToastMessage({
           type: 'success',
-          head: `Success ${actionVerb}ing!`,
+          head: t(`addButton.successHead_${actionVerb}`), // e.g. "Success editing!" / "Success adding!"
           body: (
             <span>
-              Successfully {actionVerb}ed: <strong>{albumData.nameBand}</strong> -{' '}
-              <strong>{albumData.nameAlbum}</strong>
+              {t(`addButton.successBody_${actionVerb}`, {
+                band: albumData.nameBand,
+                album: albumData.nameAlbum,
+              })}
             </span>
           ),
         });
@@ -141,10 +145,13 @@ const AddButton = ({ onClick, handleReloadAlbums, editedAlbum }) => {
     } catch (error) {
       showToastMessage({
         type: 'error',
-        head: `Error! [${error.message}]`,
+        head: t('addButton.errorHead', { message: error.message }),
         body: editedAlbum
-          ? `Error editing album:${albumData.nameBand}-${albumData.nameAlbum}`
-          : 'Error adding album!',
+          ? t('addButton.errorBodyEdit', {
+              band: albumData.nameBand,
+              album: albumData.nameAlbum,
+            })
+          : t('addButton.errorBodyAdd'),
       });
     }
   };
@@ -169,7 +176,11 @@ const AddButton = ({ onClick, handleReloadAlbums, editedAlbum }) => {
   const parseAlbumData = () => {
     const { link } = albumData;
     if (!link) {
-      showToastMessage('Please provide a Spotify link');
+      showToastMessage({
+        type: 'error',
+        head: t('addButton.errorHead', { message: t('addButton.noLinkMessage') }),
+        body: t('addButton.noLinkBody'),
+      });
       return;
     }
 
@@ -177,7 +188,11 @@ const AddButton = ({ onClick, handleReloadAlbums, editedAlbum }) => {
     parseAlbumLink(link)
       .then((albumInfo) => {
         if (!albumInfo) {
-          showToastMessage('Failed to fetch album data');
+          showToastMessage({
+            type: 'error',
+            head: t('addButton.errorHead', { message: t('addButton.fetchFailed') }),
+            body: t('addButton.fetchFailedBody'),
+          });
           return;
         }
         // Update albumData state with fetched album info
@@ -198,7 +213,11 @@ const AddButton = ({ onClick, handleReloadAlbums, editedAlbum }) => {
       })
       .catch((error) => {
         console.error('Error parsing album link:', error);
-        showToastMessage('Error parsing album link');
+        showToastMessage({
+          type: 'error',
+          head: t('addButton.errorHead', { message: error.message }),
+          body: t('addButton.parseErrorBody'),
+        });
       });
   };
 
@@ -258,11 +277,11 @@ const AddButton = ({ onClick, handleReloadAlbums, editedAlbum }) => {
         aria-labelledby="exampleModalLabel"
         aria-hidden="true"
       >
-        <div className="modal-dialog modal-xl">
+        <div className="modal-dialog modal-fullscreen modal-dialog-scrollable">
           <div className="modal-content">
             <div className="modal-header">
               <h1 className="modal-title fs-5" id="exampleModalLabel">
-                Adding new album
+                {editedAlbum ? t('addButton.editAlbumTitle') : t('addButton.addNewAlbum')}
               </h1>
               <button
                 type="button"
@@ -277,7 +296,7 @@ const AddButton = ({ onClick, handleReloadAlbums, editedAlbum }) => {
               <div className={`p-3 ${isMobile ? '' : 'w-50'} leftInputs`}>
                 <div className="mb-3">
                   <label htmlFor="albumName" className="form-label">
-                    Album Name
+                    {t('addButton.albumName')}
                   </label>
                   <input
                     type="text"
@@ -290,7 +309,7 @@ const AddButton = ({ onClick, handleReloadAlbums, editedAlbum }) => {
                 </div>
                 <div className="mb-3">
                   <label htmlFor="bandName" className="form-label">
-                    Band Name
+                    {t('addButton.bandName')}
                   </label>
                   <input
                     type="text"
@@ -303,7 +322,7 @@ const AddButton = ({ onClick, handleReloadAlbums, editedAlbum }) => {
                 </div>
                 <div className="mb-3">
                   <label htmlFor="review" className="form-label">
-                    Review
+                    {t('addButton.review')}
                   </label>
                   <textarea
                     className="form-control review"
@@ -315,7 +334,7 @@ const AddButton = ({ onClick, handleReloadAlbums, editedAlbum }) => {
                 </div>
                 <div className="mb-3">
                   <label htmlFor="spotifyLink" className="form-label">
-                    Spotify Link
+                    {t('addButton.spotifyLink')}
                   </label>
                   <input
                     type="text"
@@ -328,7 +347,7 @@ const AddButton = ({ onClick, handleReloadAlbums, editedAlbum }) => {
                 </div>
                 <div className="mb-3">
                   <button type="button" className="btn btn-primary" onClick={parseAlbumData}>
-                    GET INFO FROM SPOTIFY
+                    {t('addButton.getInfoFromSpotify')}
                   </button>
                 </div>
               </div>
@@ -338,7 +357,7 @@ const AddButton = ({ onClick, handleReloadAlbums, editedAlbum }) => {
                 <div className="year_estimation_favorite">
                   <div className="mb-3 row align-items-center releaseYear">
                     <label htmlFor="releaseYear" className="col-sm-4 col-form-label">
-                      Release Year
+                      {t('addButton.releaseYear')}
                     </label>
                     <div className="col-sm-3">
                       <input
@@ -359,7 +378,7 @@ const AddButton = ({ onClick, handleReloadAlbums, editedAlbum }) => {
                       affiliation={'album'}
                     />
                     <label className="form-check-label" htmlFor="estimation">
-                      Estimation
+                      {t('addButton.estimation')}
                     </label>
                   </div>
                   <div className="mb-3 form-check">
@@ -369,13 +388,13 @@ const AddButton = ({ onClick, handleReloadAlbums, editedAlbum }) => {
                       index={'modalStar'}
                     />
                     <label className="form-check-label" htmlFor="favorite">
-                      Favorite
+                      {t('addButton.favorite')}
                     </label>
                   </div>
                 </div>
                 <div className="mb-3">
                   <label htmlFor="cover" className="form-label">
-                    Album Cover
+                    {t('addButton.albumCover')}
                   </label>
                   <input
                     type="file"
@@ -390,7 +409,9 @@ const AddButton = ({ onClick, handleReloadAlbums, editedAlbum }) => {
                 {/* Tracks */}
                 {albumData.tracks.map((track, index) => (
                   <div key={index} className="mb-3">
-                    <label className="form-label">Track {index + 1}</label>
+                    <label className="form-label">
+                      {t('addButton.track')} {index + 1}
+                    </label>
                     <div className="d-flex">
                       <input
                         style={{ width: '15%', textAlign: 'center' }}
@@ -404,7 +425,7 @@ const AddButton = ({ onClick, handleReloadAlbums, editedAlbum }) => {
                       <input
                         type="text"
                         className="form-control me-2"
-                        placeholder="Track Name"
+                        placeholder={t('addButton.trackName')}
                         name={`tracks[${index}].nameTrack`}
                         value={track.nameTrack}
                         onChange={(e) => handleInputChange(e, index)}
@@ -423,7 +444,7 @@ const AddButton = ({ onClick, handleReloadAlbums, editedAlbum }) => {
                       <input
                         type="text"
                         className="form-control me-2"
-                        placeholder="Spotify Link"
+                        placeholder={t('addButton.spotifyLink')}
                         name={`tracks[${index}].link`}
                         value={track.link}
                         onChange={(e) => handleInputChange(e, index)}
@@ -452,7 +473,7 @@ const AddButton = ({ onClick, handleReloadAlbums, editedAlbum }) => {
                 data-bs-dismiss="modal"
                 onClick={handleModalClose}
               >
-                Close
+                {t('addButton.close')}
               </button>
               <button
                 type="button"
@@ -460,7 +481,7 @@ const AddButton = ({ onClick, handleReloadAlbums, editedAlbum }) => {
                 data-bs-dismiss="modal"
                 onClick={handleAddButtonClick}
               >
-                {editedAlbum ? 'Save' : 'Add'}
+                {editedAlbum ? t('addButton.save') : t('addButton.add')}
               </button>
             </div>
           </div>

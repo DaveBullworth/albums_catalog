@@ -1,9 +1,11 @@
 import React, { forwardRef } from 'react';
 import { useSelector } from 'react-redux';
+import { useTranslation } from 'react-i18next';
 import tinycolor from 'tinycolor2';
 import '../styles/albumInfo.scss';
 
 const AlbumInfo = forwardRef(({ albumData }, ref) => {
+  const { t } = useTranslation();
   const { id, tracks, review } = albumData || {};
   const dominantColor = useSelector((state) => {
     const album = state.album.albums.find((album) => album.id === id);
@@ -27,10 +29,10 @@ const AlbumInfo = forwardRef(({ albumData }, ref) => {
                 #
               </th>
               <th scope="col" style={{ ...innerBlockStyle, textAlign: 'left' }}>
-                Name
+                {t('albumInfo.name')}
               </th>
               <th scope="col" style={innerBlockStyle}>
-                Mark
+                {t('albumInfo.mark')}
               </th>
             </tr>
           </thead>
@@ -60,7 +62,7 @@ const AlbumInfo = forwardRef(({ albumData }, ref) => {
         </table>
       </div>
       <p className="text-center fw-bold fs-5" style={innerBlockStyle}>
-        Album Review
+        {t('albumInfo.review')}
       </p>
       <div className="text-block" style={innerBlockStyle}>
         <p className="p_review">{review}</p>

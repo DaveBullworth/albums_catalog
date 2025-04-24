@@ -1,0 +1,72 @@
+{
+  "albumsPage": {
+    "logout": "Logout",
+    "reset": "Reset"
+  },
+  "addButton": {
+    "successHead_edit": "Successfully edited!",
+    "successHead_add": "Successfully added!",
+    "successBody_edit": "Album {{band}} — {{album}} was successfully edited.",
+    "successBody_add": "Album {{band}} — {{album}} was successfully added.",
+    "errorBodyEdit": "Error while editing album: {{band}} — {{album}}.",
+    "errorBodyAdd": "Error while adding album!",
+    "errorHead": "Error! [{{message}}]",
+    "noLinkMessage": "No link provided",
+    "noLinkBody": "Please provide a Spotify album link.",
+    "fetchFailed": "Failed to fetch album data",
+    "fetchFailedBody": "We couldn't retrieve data from Spotify. Please check the link.",
+    "parseErrorBody": "An error occurred while parsing the album link.",
+    "addNewAlbum": "Adding new album",
+    "editAlbumTitle": "Changing album data",
+    "albumName": "Album Name",
+    "bandName": "Band Name",
+    "review": "Review",
+    "spotifyLink": "Spotify Link",
+    "getInfoFromSpotify": "GET INFO FROM SPOTIFY",
+    "releaseYear": "Release Year",
+    "estimation": "Estimation",
+    "favorite": "Favorite",
+    "albumCover": "Album Cover",
+    "close": "Close",
+    "save": "Save",
+    "add": "Add",
+    "track": "Track",
+    "trackName": "Track Name"
+  },
+  "albumInfo": {
+    "name": "Name",
+    "mark": "Mark",
+    "review": "Album review"
+  },
+  "albumComponent": {
+    "successHeadDelete": "Success!",
+    "successBodyDelete": "Successfully deleted:",
+    "errorHeadDelete": "Error! [{{message}}]",
+    "errorBodyDelete": "Unable to delete:",
+    "deleteAlbumTitle": "Delete Album",
+    "deleteConfirmation": "Are you sure you want to delete album:",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "albumCover": "Album Cover",
+    "fetchErrorHead": "Error when uploading albums",
+    "fetchErrorBody": "Unknown error",
+    "fetchOneErrorHead": "Error when receiving album data"
+  },
+  "navBar": {
+    "tooltipYearError": "Year 'to' should be greater than year 'from'",
+    "yearsLabel": "Years",
+    "yearFromPlaceholder": "from",
+    "yearToPlaceholder": "to",
+    "resetYearsTooltip": "Reset year filter",
+    "bandNameLabel": "Band Name",
+    "bandSearchPlaceholder": "Search",
+    "resetBandTooltip": "Reset band name filter",
+    "albumNameLabel": "Album Name",
+    "albumSearchPlaceholder": "Search",
+    "resetAlbumTooltip": "Reset album name filter",
+    "sortByLabel": "Sort by:",
+    "sortReleaseYear": "Release Year",
+    "sortBandName": "Band Name",
+    "sortAlbumName": "Album Name"
+  }
+}

@@ -1,0 +1,72 @@
+{
+  "albumsPage": {
+    "logout": "Выход",
+    "reset": "Сброс"
+  },
+  "addButton": {
+    "successHead_edit": "Успешное редактирование!",
+    "successHead_add": "Успешное добавление!",
+    "successBody_edit": "Альбом {{band}} — {{album}} успешно отредактирован.",
+    "successBody_add": "Альбом {{band}} — {{album}} успешно добавлен.",
+    "errorBodyEdit": "Ошибка при редактировании альбома: {{band}} — {{album}}.",
+    "errorBodyAdd": "Ошибка при добавлении альбома!",
+    "errorHead": "Ошибка! [{{message}}]",
+    "noLinkMessage": "Ссылка не указана",
+    "noLinkBody": "Пожалуйста, укажите ссылку на альбом в Spotify.",
+    "fetchFailed": "Не удалось получить данные об альбоме",
+    "fetchFailedBody": "Не удалось получить данные с Spotify. Проверьте правильность ссылки.",
+    "parseErrorBody": "Произошла ошибка при разборе ссылки на альбом.",
+    "addNewAlbum": "Добавление нового альбома",
+    "editAlbumTitle": "Изменение данных альбома",
+    "albumName": "Название альбома",
+    "bandName": "Название группы",
+    "review": "Обзор",
+    "spotifyLink": "Ссылка на Spotify",
+    "getInfoFromSpotify": "ПОЛУЧИТЬ ИНФО ИЗ SPOTIFY",
+    "releaseYear": "Год выпуска",
+    "estimation": "Оценка",
+    "favorite": "Избранное",
+    "albumCover": "Обложка альбома",
+    "close": "Закрыть",
+    "save": "Сохранить",
+    "add": "Добавить",
+    "track": "Трек",
+    "trackName": "Название трека"
+  },
+  "albumInfo": {
+    "name": "Имя",
+    "mark": "Оценка",
+    "review": "Рецензия альбома"
+  },
+  "albumComponent": {
+    "successHeadDelete": "Успешно!",
+    "successBodyDelete": "Успешно удалено:",
+    "errorHeadDelete": "Ошибка! [{{message}}]",
+    "errorBodyDelete": "Не удалось удалить:",
+    "deleteAlbumTitle": "Удаление альбома",
+    "deleteConfirmation": "Вы уверены, что хотите удалить альбом:",
+    "cancel": "Отмена",
+    "delete": "Удалить",
+    "albumCover": "Обложка альбома",
+    "fetchErrorHead": "Ошибка при загрузке альбомов",
+    "fetchErrorBody": "Неизвестная ошибка",
+    "fetchOneErrorHead": "Ошибка при получении данных альбома"
+  },
+  "navBar": {
+    "tooltipYearError": "Год «по» должен быть больше года «с»",
+    "yearsLabel": "Годы",
+    "yearFromPlaceholder": "с",
+    "yearToPlaceholder": "по",
+    "resetYearsTooltip": "Сбросить фильтр по годам",
+    "bandNameLabel": "Название группы",
+    "bandSearchPlaceholder": "Поиск",
+    "resetBandTooltip": "Сбросить фильтр по названию группы",
+    "albumNameLabel": "Название альбома",
+    "albumSearchPlaceholder": "Поиск",
+    "resetAlbumTooltip": "Сбросить фильтр по названию альбома",
+    "sortByLabel": "Сортировать по:",
+    "sortReleaseYear": "Году выпуска",
+    "sortBandName": "Названию группы",
+    "sortAlbumName": "Названию альбома"
+  }
+}

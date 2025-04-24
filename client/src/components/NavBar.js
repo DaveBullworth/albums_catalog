@@ -1,10 +1,12 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import Heart from '../components/Heart';
 import Star from '../components/Star';
 import '../styles/navBar.scss';
 import * as bootstrap from 'bootstrap';
 
 const NavBar = ({ filters, setFilters, handleReloadAlbums, reset }) => {
+  const { t } = useTranslation();
   const [yearAInput, setYearAInput] = useState('');
   const [yearBInput, setYearBInput] = useState('');
   const [nameBandInput, setNameBandInput] = useState('');
@@ -21,7 +23,7 @@ const NavBar = ({ filters, setFilters, handleReloadAlbums, reset }) => {
     const tooltipElement = yearBInputRef.current;
     if (tooltipElement) {
       const tooltip = new bootstrap.Tooltip(tooltipElement, {
-        title: "year 'to' should be bigger than year 'from'",
+        title: t('navBar.tooltipYearError'),
         placement: 'bottom',
         trigger: 'manual', // Ensure manual trigger
       });
@@ -35,6 +37,15 @@ const NavBar = ({ filters, setFilters, handleReloadAlbums, reset }) => {
       };
     }
   }, [yearBInputRef, showTooltip]);
+
+  useEffect(() => {
+    const tooltipTriggerList = Array.from(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    const tooltipList = tooltipTriggerList.map((el) => new bootstrap.Tooltip(el));
+
+    return () => {
+      tooltipList.forEach((tooltip) => tooltip.dispose());
+    };
+  }, [filters]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -70,21 +81,40 @@ const NavBar = ({ filters, setFilters, handleReloadAlbums, reset }) => {
     handleReloadAlbums(true);
   };
 
-  const handleFilterButtonClick = () => {
-    if (yearAInput !== '' && yearBInput !== '' && parseInt(yearBInput) < parseInt(yearAInput)) {
+  const handleFilterButtonClick = (field) => {
+    if (
+      field === 'years' &&
+      yearAInput !== '' &&
+      yearBInput !== '' &&
+      parseInt(yearBInput) < parseInt(yearAInput)
+    ) {
       setShowTooltip(true);
       return;
     } else {
       setShowTooltip(false);
     }
 
-    setFilters({
-      ...filters,
-      yearA: yearAInput,
-      yearB: yearBInput,
-      nameBand: nameBandInput,
-      nameAlbum: nameAlbumInput,
-    });
+    // Прерывание, если фильтр уже совпадает с текущим инпутом
+    if (
+      (field === 'nameBand' && filters.nameBand === nameBandInput) ||
+      (field === 'nameAlbum' && filters.nameAlbum === nameAlbumInput) ||
+      (field === 'years' && filters.yearA === yearAInput && filters.yearB === yearBInput)
+    ) {
+      return;
+    }
+
+    const updatedFilters = { ...filters };
+
+    if (field === 'nameBand') {
+      updatedFilters.nameBand = nameBandInput;
+    } else if (field === 'nameAlbum') {
+      updatedFilters.nameAlbum = nameAlbumInput;
+    } else if (field === 'years') {
+      updatedFilters.yearA = yearAInput;
+      updatedFilters.yearB = yearBInput;
+    }
+
+    setFilters(updatedFilters);
     handleReloadAlbums(true);
   };
 
@@ -127,6 +157,7 @@ const NavBar = ({ filters, setFilters, handleReloadAlbums, reset }) => {
   };
 
   const handleResetNameAlbum = () => {
+    // удаляем тултип, если он есть
     setNameAlbumInput('');
     setFilters((prevFilters) => ({
       ...prevFilters,
@@ -149,14 +180,14 @@ const NavBar = ({ filters, setFilters, handleReloadAlbums, reset }) => {
   return (
     <nav className="navbar bg-body-tertiary">
       <div className="container-fluid">
-        <span>Years</span>
+        <span>{t('navBar.yearsLabel')}</span>
         <div className="years">
           <div className="years inputs">
             <input
               style={{ textAlign: 'center' }}
               type="text"
               className="form-control"
-              placeholder="from"
+              placeholder={t('navBar.yearFromPlaceholder')}
               id="yearA"
               name="yearA"
               value={yearAInput}
@@ -167,7 +198,7 @@ const NavBar = ({ filters, setFilters, handleReloadAlbums, reset }) => {
               style={{ textAlign: 'center' }}
               type="text"
               className={`${showTooltip ? 'form-control myshadow' : 'form-control'}`}
-              placeholder="to"
+              placeholder={t('navBar.yearToPlaceholder')}
               id="yearB"
               name="yearB"
               value={yearBInput}
@@ -178,22 +209,29 @@ const NavBar = ({ filters, setFilters, handleReloadAlbums, reset }) => {
           <button
             className="btn btn-outline-secondary"
             type="button"
-            onClick={handleFilterButtonClick}
+            onClick={() => handleFilterButtonClick('years')}
           >
             <i className="bi bi-search"></i>
           </button>
           {filters.yearA || filters.yearB ? (
-            <button className="btn btn-reset-years" type="button" onClick={handleResetYears}>
+            <button
+              className="btn btn-reset-name"
+              type="button"
+              onClick={handleResetYears}
+              data-bs-toggle="tooltip"
+              data-bs-placement="top"
+              data-bs-title={t('navBar.resetYearsTooltip')}
+            >
               <i className="bi bi-x-lg" />
             </button>
           ) : null}
         </div>
-        <span>Band Name</span>
+        <span>{t('navBar.bandNameLabel')}</span>
         <form className="d-flex" role="search">
           <input
             className="form-control me-2"
             type="search"
-            placeholder="Search"
+            placeholder={t('navBar.bandSearchPlaceholder')}
             aria-label="Search"
             id="nameBand"
             name="nameBand"
@@ -203,22 +241,29 @@ const NavBar = ({ filters, setFilters, handleReloadAlbums, reset }) => {
           <button
             className="btn btn-outline-secondary"
             type="button"
-            onClick={handleFilterButtonClick}
+            onClick={() => handleFilterButtonClick('nameBand')}
           >
             <i className="bi bi-search"></i>
           </button>
           {filters.nameBand ? (
-            <button className="btn btn-reset-name" type="button" onClick={handleResetNameBand}>
+            <button
+              className="btn btn-reset-name"
+              type="button"
+              onClick={handleResetNameBand}
+              data-bs-toggle="tooltip"
+              data-bs-placement="top"
+              title={t('navBar.resetBandTooltip')}
+            >
               <i className="bi bi-x-lg" />
             </button>
           ) : null}
         </form>
-        <span>Album Name</span>
+        <span>{t('navBar.albumNameLabel')}</span>
         <form className="d-flex" role="search">
           <input
             className="form-control me-2"
             type="search"
-            placeholder="Search"
+            placeholder={t('navBar.albumSearchPlaceholder')}
             aria-label="Search"
             id="nameAlbum"
             name="nameAlbum"
@@ -228,12 +273,19 @@ const NavBar = ({ filters, setFilters, handleReloadAlbums, reset }) => {
           <button
             className="btn btn-outline-secondary"
             type="button"
-            onClick={handleFilterButtonClick}
+            onClick={() => handleFilterButtonClick('nameAlbum')}
           >
             <i className="bi bi-search"></i>
           </button>
           {filters.nameAlbum ? (
-            <button className="btn btn-reset-name" type="button" onClick={handleResetNameAlbum}>
+            <button
+              className="btn btn-reset-name"
+              type="button"
+              onClick={handleResetNameAlbum}
+              data-bs-toggle="tooltip"
+              data-bs-placement="top"
+              data-bs-title={t('navBar.resetAlbumTooltip')}
+            >
               <i className="bi bi-x-lg" />
             </button>
           ) : null}
@@ -247,7 +299,7 @@ const NavBar = ({ filters, setFilters, handleReloadAlbums, reset }) => {
           />
           <Star selected={filters.favorite} onChange={handleStarChange} index={'navbarStar'} />
         </div>
-        <span>Sort by:</span>
+        <span>{t('navBar.sortByLabel')}</span>
         <div className="sort">
           <div className="sort-element">
             <span
@@ -258,7 +310,7 @@ const NavBar = ({ filters, setFilters, handleReloadAlbums, reset }) => {
                   : { cursor: 'pointer' }
               }
             >
-              Release Year
+              {t('navBar.sortReleaseYear')}
             </span>
             {sortYear !== null && (
               <div className="triangles">
@@ -293,7 +345,7 @@ const NavBar = ({ filters, setFilters, handleReloadAlbums, reset }) => {
                   : { cursor: 'pointer' }
               }
             >
-              Band Name
+              {t('navBar.sortBandName')}
             </span>
             {sortBandName !== null && (
               <div className="triangles">
@@ -328,7 +380,7 @@ const NavBar = ({ filters, setFilters, handleReloadAlbums, reset }) => {
                   : { cursor: 'pointer' }
               }
             >
-              Album Name
+              {t('navBar.sortAlbumName')}
             </span>
             {sortAlbumName !== null && (
               <div className="triangles">

@@ -137,7 +137,6 @@ h1 {
 
 .btn-danger {
   width: 17%;
-  padding: 0.25rem;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -145,12 +144,23 @@ h1 {
 
 .btn-success {
   width: 7%;
-  padding-left: 0.6rem;
+  padding: 0;
+  height: 2.5rem;
 }
 
 .btn-success i,
 .btn-danger i {
   margin: 0;
+  font-size: 25px;
+  height: 25px;
+  line-height: normal;
+}
+
+.modal-body.d-flex {
+  padding: 0;
+  .btn-danger {
+    padding: 0;
+  }
 }
 
 .toast-header.success {

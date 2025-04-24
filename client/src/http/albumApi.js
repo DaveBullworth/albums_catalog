@@ -19,7 +19,7 @@ export const fetchAlbums = async (page, limit, filters) => {
   }
 
   if (filters && Object.keys(filters).length > 0) {
-    url += `&filters=${JSON.stringify(filters)}`;
+    url += `&filters=${encodeURIComponent(JSON.stringify(filters))}`;
   }
 
   const { data } = await $host.get(url);

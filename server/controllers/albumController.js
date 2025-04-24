@@ -70,7 +70,7 @@ class AlbumController {
   async getPage(req, res, next) {
     let { page, limit, filters } = req.query;
     try {
-      filters = filters ? JSON.parse(filters) : {};
+      filters = filters ? JSON.parse(decodeURIComponent(filters)) : {};
       page = page || 1;
       limit = limit || 4;
       let offset = page * limit - limit;

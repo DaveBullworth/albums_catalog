@@ -3,6 +3,7 @@ body,
 #root {
   width: 100%;
   min-height: 100vh;
+  font-family: 'Space Grotesk RU';
 }
 
 body {
@@ -17,30 +18,33 @@ body {
   justify-content: end;
   height: 100vh;
   margin: 0 auto;
-  .logout-button {
-    position: absolute;
-    top: 25px;
-    right: 20px;
-    padding: 8px 12px;
-    background-color: #dc3545;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    font-weight: bold;
-    cursor: pointer;
-    z-index: 10;
-    transition: background-color 0.3s;
+  .btn-container {
+    .logout-button {
+      height: 2.5rem;
+      position: absolute;
+      top: 25px;
+      right: 20px;
+      padding: 8px 12px;
+      background-color: #dc3545;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      font-weight: bold;
+      cursor: pointer;
+      z-index: 10;
+      transition: background-color 0.3s;
 
-    @media (max-width: 1280px) {
-      position: sticky;
-      top: 0;
-      right: unset;
-      margin-top: 0.5rem;
-      margin-bottom: 0.5rem;
+      &:hover {
+        background-color: #c82333;
+      }
     }
-
-    &:hover {
-      background-color: #c82333;
+    .language-switcher {
+      position: absolute;
+      top: 25px;
+      right: 10rem;
+      .btn-group {
+        height: 2.5rem;
+      }
     }
   }
 }
@@ -101,5 +105,19 @@ body {
   body {
     justify-content: center;
     margin-right: 0;
+  }
+
+  .app-container {
+    .btn-container {
+      width: 100%;
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      .logout-button,
+      .language-switcher {
+        position: static;
+        margin: 1rem;
+      }
+    }
   }
 }
