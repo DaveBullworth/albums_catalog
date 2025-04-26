@@ -10,10 +10,32 @@ class AlbumController {
   async create(req, res, next) {
     try {
       const { cover } = req.files;
-      let fileName = uuid.v4() + '.jpg';
-      cover.mv(path.resolve(__dirname, '..', 'static', fileName));
       let { nameAlbum, nameBand, year, review, estimation, favorite, tracks, link } = req.body;
 
+      // Проверка обязательных полей
+      const missingFields = [];
+
+      if (!cover) missingFields.push('cover');
+      if (!nameAlbum) missingFields.push('nameAlbum');
+      if (!nameBand) missingFields.push('nameBand');
+      if (!year) missingFields.push('year');
+
+      // Дополнительно можно проверить, что year — это число
+      if (year && isNaN(Number(year))) missingFields.push('year (not a number)');
+
+      if (missingFields.length > 0) {
+        return next(
+          ApiError.badRequest(
+            req.t('album.create.missingFields', { fields: missingFields.join(', ') })
+          )
+        );
+      }
+
+      // Всё ок — обрабатываем файл обложки
+      let fileName = uuid.v4() + '.jpg';
+      cover.mv(path.resolve(__dirname, '..', 'static', fileName));
+
+      // Создание альбома
       const album = await Album.create({
         cover: fileName,
         nameAlbum,
@@ -26,17 +48,22 @@ class AlbumController {
         userId: req.user.id,
       });
 
+      // Если есть треки — создаём их
+      // Если есть треки — создаём их
       if (tracks) {
         tracks = JSON.parse(tracks);
-        tracks.forEach((item, index) =>
-          Track.create({
+        for (const item of tracks) {
+          if (!item.nameTrack || item.order == null) {
+            continue; // Можно сюда тоже добавить валидацию треков при желании
+          }
+          await Track.create({
             order: item.order,
             nameTrack: item.nameTrack,
             estimation: item.estimation,
             albumId: album.id,
             link: item.link,
-          })
-        );
+          });
+        }
       }
 
       return res.json(album);

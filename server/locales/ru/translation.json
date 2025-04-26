@@ -33,6 +33,7 @@
   },
   "album": {
     "create": {
+      "missingFields": "Отсутствуют обязательные поля: {{fields}}",
       "internalError": "Внутренняя ошибка сервера"
     },
     "getOne": {

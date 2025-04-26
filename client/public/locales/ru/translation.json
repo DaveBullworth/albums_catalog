@@ -31,7 +31,22 @@
     "save": "Сохранить",
     "add": "Добавить",
     "track": "Трек",
-    "trackName": "Название трека"
+    "trackName": "Название трека",
+    "attention": "Внимание",
+    "unsavedChangesConfirm": "Вы внесли изменения. Уверены, что хотите закрыть форму без сохранения?",
+    "cancel": "Отмена",
+    "confirm": "Подтвердить",
+    "validationErrorHead": "Ошибка валидации",
+    "validationErrorBody": "Пожалуйста, заполните обязательные поля: {{fields}}.",
+    "fields": {
+      "cover": "Обложка",
+      "nameAlbum": "Название альбома",
+      "nameBand": "Название группы",
+      "year": "Год выпуска",
+      "review": "Рецензия",
+      "estimation": "Оценка",
+      "favorite": "Избранное"
+    }
   },
   "albumInfo": {
     "name": "Имя",

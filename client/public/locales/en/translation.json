@@ -31,7 +31,22 @@
     "save": "Save",
     "add": "Add",
     "track": "Track",
-    "trackName": "Track Name"
+    "trackName": "Track Name",
+    "attention": "Attention",
+    "unsavedChangesConfirm": "You have made changes. Are you sure you want to close the form without saving?",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "validationErrorHead": "Validation Error",
+    "validationErrorBody": "Please fill in the required fields: {{fields}}.",
+    "fields": {
+      "cover": "Cover",
+      "nameAlbum": "Album Name",
+      "nameBand": "Band Name",
+      "year": "Year",
+      "review": "Review",
+      "estimation": "Estimation",
+      "favorite": "Favorite"
+    }
   },
   "albumInfo": {
     "name": "Name",

@@ -8,11 +8,7 @@ import { createAlbum, editAlbum, parseAlbumLink } from '../http/albumApi';
 const AddButton = ({ onClick, handleReloadAlbums, editedAlbum }) => {
   const { t } = useTranslation();
   const initialTrack = { order: 1, nameTrack: '', estimation: false, link: '' };
-  const [isMobile, setIsMobile] = useState(window.innerWidth < 1000);
-
-  const [toastMessage, setToastMessage] = useState('');
-
-  const [albumData, setAlbumData] = useState({
+  const emptyAlbumData = {
     nameAlbum: '',
     nameBand: '',
     review: '',
@@ -22,7 +18,13 @@ const AddButton = ({ onClick, handleReloadAlbums, editedAlbum }) => {
     cover: null,
     link: '',
     tracks: [initialTrack],
-  });
+  };
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 1000);
+  const [toastMessage, setToastMessage] = useState('');
+  const [albumData, setAlbumData] = useState(emptyAlbumData);
+  const [initialAlbumData, setInitialAlbumData] = useState(emptyAlbumData);
+  const [mainModal, setMainModal] = useState(null);
+  const [confirmModal, setConfirmModal] = useState(null);
 
   const handleResize = () => {
     setIsMobile(window.innerWidth < 1000);
@@ -85,6 +87,34 @@ const AddButton = ({ onClick, handleReloadAlbums, editedAlbum }) => {
   };
 
   const handleAddButtonClick = async () => {
+    if (!hasFormChanged()) {
+      return false; // Возвращаем false — модалку не закрываем
+    }
+
+    // Валидация обязательных полей
+    const requiredFields = [
+      'cover',
+      'nameAlbum',
+      'nameBand',
+      'year',
+      'review',
+      'estimation',
+      'favorite',
+    ];
+    const missingFields = requiredFields.filter((field) => !albumData[field]);
+
+    if (missingFields.length > 0) {
+      showToastMessage({
+        type: 'error',
+        head: t('addButton.validationErrorHead'),
+        body: t('addButton.validationErrorBody', {
+          fields: missingFields.map((field) => t(`addButton.fields.${field}`)).join(', '),
+        }),
+      });
+
+      return false; // Возвращаем false — модалку не закрываем
+    }
+
     const formData = new FormData();
     formData.append('cover', albumData.cover);
     formData.append('nameAlbum', albumData.nameAlbum);
@@ -129,18 +159,9 @@ const AddButton = ({ onClick, handleReloadAlbums, editedAlbum }) => {
             </span>
           ),
         });
-        setAlbumData({
-          nameAlbum: '',
-          nameBand: '',
-          review: '',
-          estimation: false,
-          favorite: false,
-          year: '',
-          cover: null,
-          link: '',
-          tracks: [initialTrack],
-        });
+        setAlbumData(emptyAlbumData);
         handleReloadAlbums(true);
+        return true; // Всё прошло успешно — можно закрывать модалку
       }
     } catch (error) {
       showToastMessage({
@@ -154,23 +175,56 @@ const AddButton = ({ onClick, handleReloadAlbums, editedAlbum }) => {
           : t('addButton.errorBodyAdd'),
       });
     }
+    return false; // Если в try не получилось, модалку тоже не закрываем
+  };
+
+  const deepEqual = (a, b) => {
+    if (a === b) return true;
+
+    if (typeof a !== typeof b) return false;
+
+    if (typeof a !== 'object' || a === null || b === null) return false;
+
+    if (Array.isArray(a)) {
+      if (!Array.isArray(b) || a.length !== b.length) return false;
+      for (let i = 0; i < a.length; i++) {
+        if (!deepEqual(a[i], b[i])) {
+          return false;
+        }
+      }
+      return true;
+    }
+
+    const keysA = Object.keys(a);
+    const keysB = Object.keys(b);
+    if (keysA.length !== keysB.length) return false;
+
+    for (let key of keysA) {
+      if (!deepEqual(a[key], b[key])) {
+        return false;
+      }
+    }
+
+    return true;
+  };
+
+  const hasFormChanged = () => {
+    return !deepEqual(albumData, initialAlbumData);
   };
 
   const handleModalClose = () => {
-    setAlbumData({
-      nameAlbum: '',
-      nameBand: '',
-      review: '',
-      estimation: false,
-      favorite: false,
-      year: '',
-      cover: null,
-      link: '',
-      tracks: [initialTrack],
-    });
+    if (hasFormChanged()) {
+      mainModal.hide();
+      confirmModal.show();
+    } else {
+      actuallyCloseModal();
+    }
+  };
+
+  const actuallyCloseModal = () => {
+    setAlbumData(emptyAlbumData);
     handleReloadAlbums(true);
-    // Установить значение editedAlbum в null
-    if (editedAlbum) onClick(); // Это предполагает, что onClick также устанавливает editedAlbum в null
+    if (editedAlbum) onClick();
   };
 
   const parseAlbumData = () => {
@@ -229,33 +283,31 @@ const AddButton = ({ onClick, handleReloadAlbums, editedAlbum }) => {
   }, []);
 
   useEffect(() => {
+    const main = new window.bootstrap.Modal(document.getElementById('exampleModal'));
+    const confirm = new window.bootstrap.Modal(document.getElementById('confirmModal'));
+    setMainModal(main);
+    setConfirmModal(confirm);
+
     if (editedAlbum) {
-      const modal = new window.bootstrap.Modal(document.getElementById('exampleModal'));
-      modal.show();
-      setAlbumData({
-        nameAlbum: editedAlbum.nameAlbum,
-        nameBand: editedAlbum.nameBand,
-        review: editedAlbum.review,
-        estimation: editedAlbum.estimation,
-        favorite: editedAlbum.favorite,
-        year: editedAlbum.year,
-        cover: editedAlbum.cover,
-        link: editedAlbum.link,
-        tracks: editedAlbum.tracks || [initialTrack],
-      });
-    } else {
-      setAlbumData({
-        nameAlbum: '',
-        nameBand: '',
-        review: '',
-        estimation: false,
-        favorite: false,
-        year: '',
-        cover: null,
-        link: '',
-        tracks: [initialTrack],
-      });
+      main.show();
     }
+
+    const album = editedAlbum
+      ? {
+          nameAlbum: editedAlbum.nameAlbum,
+          nameBand: editedAlbum.nameBand,
+          review: editedAlbum.review,
+          estimation: editedAlbum.estimation,
+          favorite: editedAlbum.favorite,
+          year: editedAlbum.year,
+          cover: editedAlbum.cover,
+          link: editedAlbum.link,
+          tracks: editedAlbum.tracks || [initialTrack],
+        }
+      : emptyAlbumData;
+
+    setAlbumData(album);
+    setInitialAlbumData(JSON.parse(JSON.stringify(album))); // ← Сохраняем изначальное состояние
   }, [editedAlbum]);
 
   return (
@@ -478,8 +530,12 @@ const AddButton = ({ onClick, handleReloadAlbums, editedAlbum }) => {
               <button
                 type="button"
                 className="btn btn-primary"
-                data-bs-dismiss="modal"
-                onClick={handleAddButtonClick}
+                onClick={async () => {
+                  const success = await handleAddButtonClick();
+                  if (success) {
+                    handleModalClose(); // Закрываем вручную только если всё ок
+                  }
+                }}
               >
                 {editedAlbum ? t('addButton.save') : t('addButton.add')}
               </button>
@@ -488,7 +544,7 @@ const AddButton = ({ onClick, handleReloadAlbums, editedAlbum }) => {
         </div>
       </div>
       {/* Toast Message (edit/add)*/}
-      <div className="position-fixed bottom-0 end-0 p-3" style={{ zIndex: '11' }}>
+      <div className="position-fixed bottom-0 end-0 p-3" style={{ zIndex: '1056' }}>
         <div
           className="toast"
           id="resToast"
@@ -508,6 +564,52 @@ const AddButton = ({ onClick, handleReloadAlbums, editedAlbum }) => {
           </div>
           <div className={`toast-body ${toastMessage.type === 'error' ? 'error' : 'success'}`}>
             {toastMessage.body}
+          </div>
+        </div>
+      </div>
+      <div
+        className="modal fade"
+        id="confirmModal"
+        tabIndex="-1"
+        aria-labelledby="confirmModalLabel"
+        aria-hidden="true"
+      >
+        <div className="modal-dialog">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h5 className="modal-title">{t('addButton.attention')}</h5>
+              <button
+                type="button"
+                className="btn-close"
+                onClick={() => {
+                  confirmModal.hide();
+                  mainModal.show();
+                }}
+              />
+            </div>
+            <div className="modal-body">
+              <p>{t('addButton.unsavedChangesConfirm')}</p>
+            </div>
+            <div className="modal-footer">
+              <button
+                className="btn btn-secondary"
+                onClick={() => {
+                  confirmModal.hide();
+                  mainModal.show();
+                }}
+              >
+                {t('addButton.cancel')}
+              </button>
+              <button
+                className="btn btn-danger"
+                onClick={() => {
+                  confirmModal.hide();
+                  actuallyCloseModal();
+                }}
+              >
+                {t('addButton.confirm')}
+              </button>
+            </div>
           </div>
         </div>
       </div>
