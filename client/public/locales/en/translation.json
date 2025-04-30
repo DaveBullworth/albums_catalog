@@ -38,6 +38,8 @@
     "confirm": "Confirm",
     "validationErrorHead": "Validation Error",
     "validationErrorBody": "Please fill in the required fields: {{fields}}.",
+    "reviewTooLong": "The review cannot be longer than 1,500 characters",
+    "fieldTooLong": "This field cannot be longer than 200 characters.",
     "fields": {
       "cover": "Cover",
       "nameAlbum": "Album Name",
@@ -83,5 +85,27 @@
     "sortReleaseYear": "Release Year",
     "sortBandName": "Band Name",
     "sortAlbumName": "Album Name"
+  },
+  "loginPage": {
+    "enter": "Log In",
+    "registration": "Registration",
+    "login": "Username",
+    "password": "Password",
+    "toEnter": "Enter",
+    "register": "Register",
+    "noAccount": "Don't have an account?",
+    "registerHere": "Register here",
+    "haveAccount": "Already have an account?",
+    "loginHere": "Log in here",
+    "authFailed": "Authorization failed",
+    "loginFailed": "Login failed",
+    "registerFailed": "Registration failed",
+    "authorizationFailed": "Authorization failed",
+    "invalidLogin": "Username must be 6-40 characters long and contain only letters, numbers, underscores, and dots",
+    "invalidPassword": "Password must be 6-40 characters long"
+  },
+  "theme": {
+    "dark": "Dark",
+    "light": "Light"
   }
 }

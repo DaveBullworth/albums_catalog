@@ -38,6 +38,8 @@
     "confirm": "Подтвердить",
     "validationErrorHead": "Ошибка валидации",
     "validationErrorBody": "Пожалуйста, заполните обязательные поля: {{fields}}.",
+    "reviewTooLong": "Рецензия не может быть длиннее 1500 символов",
+    "fieldTooLong": "Данное поле не может быть длиннее 200 символов",
     "fields": {
       "cover": "Обложка",
       "nameAlbum": "Название альбома",
@@ -83,5 +85,27 @@
     "sortReleaseYear": "Году выпуска",
     "sortBandName": "Названию группы",
     "sortAlbumName": "Названию альбома"
+  },
+  "loginPage": {
+    "enter": "Вход",
+    "registration": "Регистрация",
+    "login": "Логин",
+    "password": "Пароль",
+    "toEnter": "Войти",
+    "register": "Зарегистрироваться",
+    "noAccount": "Нет аккаунта?",
+    "registerHere": "Зарегистрироваться",
+    "haveAccount": "Уже есть аккаунт?",
+    "loginHere": "Войти",
+    "authFailed": "Авторизация не удалась",
+    "loginFailed": "Ошибка входа",
+    "registerFailed": "Ошибка регистрации",
+    "authorizationFailed": "Ошибка авторизации",
+    "invalidLogin": "Логин должен содержать от 6 до 40 символов и состоять только из латинских букв, цифр, подчёркиваний и точек",
+    "invalidPassword": "Пароль должен содержать от 6 до 40 символов"
+  },
+  "theme": {
+    "dark": "Темная",
+    "light": "Светлая"
   }
 }

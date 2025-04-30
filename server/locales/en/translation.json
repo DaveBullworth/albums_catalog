@@ -1,7 +1,7 @@
 {
   "user": {
     "registration": {
-      "sameLogin": "User with this login already exists",
+      "sameLogin": "Wrong data",
       "internalError": "Internal server error"
     },
     "check": {

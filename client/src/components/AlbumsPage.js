@@ -3,6 +3,7 @@ import AddButton from './AddButton';
 import AlbumComponent from './AlbumComponent';
 import NavBar from './NavBar';
 import LanguageSwitcher from './LanguageSwitcher';
+import ThemeSwitcher from './ThemeSwitcher';
 import '../styles/reset.scss';
 import '../styles/app.scss';
 import { logout } from '../http/userAPI';
@@ -65,11 +66,15 @@ function AlbumsPage() {
   return (
     <div className="app-container">
       <div className="btn-container">
+        <div className="theme-switcher">
+          <ThemeSwitcher />
+        </div>
         <div className="language-switcher mb-3">
           <LanguageSwitcher />
         </div>
         <button className="logout-button" onClick={handleLogout}>
-          {t('albumsPage.logout')} <i className="bi bi-box-arrow-right"></i>
+          <span className="logout-btn-text">{t('albumsPage.logout')}</span>{' '}
+          <i className="bi bi-box-arrow-right"></i>
         </button>
       </div>
       <div className="filter-container">

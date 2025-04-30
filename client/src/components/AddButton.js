@@ -47,6 +47,17 @@ const AddButton = ({ onClick, handleReloadAlbums, editedAlbum }) => {
       if (isValidYear || value === '') {
         setAlbumData((prevData) => ({ ...prevData, [name]: value }));
       }
+    } else if (['nameBand', 'nameAlbum', 'review', 'spotifyLink'].includes(name)) {
+      const maxLengths = {
+        nameBand: 200,
+        nameAlbum: 200,
+        spotifyLink: 200,
+        review: 1500,
+      };
+
+      if (value.length <= maxLengths[name]) {
+        setAlbumData((prevData) => ({ ...prevData, [name]: value }));
+      }
     } else if (name.includes('tracks')) {
       const newTracks = [...albumData.tracks];
       const [trackIndex, trackField] = name.match(/\[(\d+)\]\.(\w+)/).slice(1);
@@ -55,7 +66,15 @@ const AddButton = ({ onClick, handleReloadAlbums, editedAlbum }) => {
         // Handle track estimation using Heart component
         newTracks[trackIndex][trackField] = checked;
       } else {
-        newTracks[trackIndex][trackField] = type === 'checkbox' ? checked : value;
+        const valueToSet = type === 'checkbox' ? checked : value;
+        // Валидация длины nameTrack и link
+        if (
+          (trackField === 'nameTrack' || trackField === 'link') &&
+          typeof valueToSet === 'string' &&
+          valueToSet.length < 200
+        ) {
+          newTracks[trackIndex][trackField] = type === 'checkbox' ? checked : value;
+        }
       }
 
       setAlbumData((prevData) => ({ ...prevData, tracks: newTracks }));
@@ -92,15 +111,7 @@ const AddButton = ({ onClick, handleReloadAlbums, editedAlbum }) => {
     }
 
     // Валидация обязательных полей
-    const requiredFields = [
-      'cover',
-      'nameAlbum',
-      'nameBand',
-      'year',
-      'review',
-      'estimation',
-      'favorite',
-    ];
+    const requiredFields = ['cover', 'nameAlbum', 'nameBand', 'year', 'review'];
     const missingFields = requiredFields.filter((field) => !albumData[field]);
 
     if (missingFields.length > 0) {
@@ -323,7 +334,7 @@ const AddButton = ({ onClick, handleReloadAlbums, editedAlbum }) => {
         </button>
       )}
       <div
-        className="modal fade"
+        className="modal fade album-modal"
         id="exampleModal"
         tabIndex="-1"
         aria-labelledby="exampleModalLabel"
@@ -533,7 +544,7 @@ const AddButton = ({ onClick, handleReloadAlbums, editedAlbum }) => {
                 onClick={async () => {
                   const success = await handleAddButtonClick();
                   if (success) {
-                    handleModalClose(); // Закрываем вручную только если всё ок
+                    mainModal.hide();
                   }
                 }}
               >
@@ -568,7 +579,7 @@ const AddButton = ({ onClick, handleReloadAlbums, editedAlbum }) => {
         </div>
       </div>
       <div
-        className="modal fade"
+        className="modal fade confirm"
         id="confirmModal"
         tabIndex="-1"
         aria-labelledby="confirmModalLabel"
@@ -601,7 +612,7 @@ const AddButton = ({ onClick, handleReloadAlbums, editedAlbum }) => {
                 {t('addButton.cancel')}
               </button>
               <button
-                className="btn btn-danger"
+                className="btn btn-danger confrim-modal"
                 onClick={() => {
                   confirmModal.hide();
                   actuallyCloseModal();

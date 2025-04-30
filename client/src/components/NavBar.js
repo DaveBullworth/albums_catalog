@@ -178,7 +178,7 @@ const NavBar = ({ filters, setFilters, handleReloadAlbums, reset }) => {
   }, [reset]);
 
   return (
-    <nav className="navbar bg-body-tertiary">
+    <nav className="navbar">
       <div className="container-fluid">
         <span>{t('navBar.yearsLabel')}</span>
         <div className="years">
@@ -306,7 +306,7 @@ const NavBar = ({ filters, setFilters, handleReloadAlbums, reset }) => {
               onClick={() => handleSort(sortYear, 'sortYear', setSortYear)}
               style={
                 sortYear
-                  ? { cursor: 'pointer', color: 'blue', textDecoration: 'underline' }
+                  ? { cursor: 'pointer', color: 'red', textDecoration: 'underline' }
                   : { cursor: 'pointer' }
               }
             >
@@ -320,7 +320,7 @@ const NavBar = ({ filters, setFilters, handleReloadAlbums, reset }) => {
                     height: '0',
                     borderLeft: '5px solid transparent',
                     borderRight: '5px solid transparent',
-                    borderBottom: `5px solid ${sortYear === 'asc' ? 'blue' : 'black'}`,
+                    borderBottom: `5px solid ${sortYear === 'asc' ? 'red' : 'black'}`,
                     marginBottom: '3px',
                   }}
                 ></div>
@@ -330,7 +330,7 @@ const NavBar = ({ filters, setFilters, handleReloadAlbums, reset }) => {
                     height: '0',
                     borderLeft: '5px solid transparent',
                     borderRight: '5px solid transparent',
-                    borderTop: `5px solid ${sortYear === 'desc' ? 'blue' : 'black'}`,
+                    borderTop: `5px solid ${sortYear === 'desc' ? 'red' : 'black'}`,
                   }}
                 ></div>
               </div>
@@ -341,7 +341,7 @@ const NavBar = ({ filters, setFilters, handleReloadAlbums, reset }) => {
               onClick={() => handleSort(sortBandName, 'sortBandName', setSortBandName)}
               style={
                 sortBandName
-                  ? { cursor: 'pointer', color: 'blue', textDecoration: 'underline' }
+                  ? { cursor: 'pointer', color: 'red', textDecoration: 'underline' }
                   : { cursor: 'pointer' }
               }
             >
@@ -355,7 +355,7 @@ const NavBar = ({ filters, setFilters, handleReloadAlbums, reset }) => {
                     height: '0',
                     borderLeft: '5px solid transparent',
                     borderRight: '5px solid transparent',
-                    borderBottom: `5px solid ${sortBandName === 'asc' ? 'blue' : 'black'}`,
+                    borderBottom: `5px solid ${sortBandName === 'asc' ? 'red' : 'black'}`,
                     marginBottom: '3px',
                   }}
                 ></div>
@@ -365,7 +365,7 @@ const NavBar = ({ filters, setFilters, handleReloadAlbums, reset }) => {
                     height: '0',
                     borderLeft: '5px solid transparent',
                     borderRight: '5px solid transparent',
-                    borderTop: `5px solid ${sortBandName === 'desc' ? 'blue' : 'black'}`,
+                    borderTop: `5px solid ${sortBandName === 'desc' ? 'red' : 'black'}`,
                   }}
                 ></div>
               </div>
@@ -376,7 +376,7 @@ const NavBar = ({ filters, setFilters, handleReloadAlbums, reset }) => {
               onClick={() => handleSort(sortAlbumName, 'sortAlbumName', setSortAlbumName)}
               style={
                 sortAlbumName
-                  ? { cursor: 'pointer', color: 'blue', textDecoration: 'underline' }
+                  ? { cursor: 'pointer', color: 'red', textDecoration: 'underline' }
                   : { cursor: 'pointer' }
               }
             >
@@ -390,7 +390,7 @@ const NavBar = ({ filters, setFilters, handleReloadAlbums, reset }) => {
                     height: '0',
                     borderLeft: '5px solid transparent',
                     borderRight: '5px solid transparent',
-                    borderBottom: `5px solid ${sortAlbumName === 'asc' ? 'blue' : 'black'}`,
+                    borderBottom: `5px solid ${sortAlbumName === 'asc' ? 'red' : 'black'}`,
                     marginBottom: '3px',
                   }}
                 ></div>
@@ -400,7 +400,7 @@ const NavBar = ({ filters, setFilters, handleReloadAlbums, reset }) => {
                     height: '0',
                     borderLeft: '5px solid transparent',
                     borderRight: '5px solid transparent',
-                    borderTop: `5px solid ${sortAlbumName === 'desc' ? 'blue' : 'black'}`,
+                    borderTop: `5px solid ${sortAlbumName === 'desc' ? 'red' : 'black'}`,
                   }}
                 ></div>
               </div>

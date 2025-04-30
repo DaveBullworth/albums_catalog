@@ -1,3 +1,6 @@
+@import '~bootstrap/scss/functions';
+@import '~bootstrap/scss/variables';
+
 html,
 body,
 #root {
@@ -11,6 +14,126 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
+
+  &.dark-theme {
+    color: #f0f0f0;
+    background-color: $blue-900;
+    .login-page {
+      background-color: $blue-900;
+      .login-form-container {
+        background-color: $blue-800;
+        .password-container {
+          .btn {
+            background-color: $gray-900;
+          }
+        }
+      }
+    }
+
+    .app-container {
+      background-color: $blue-900;
+      .content-container {
+        .add-btn-container {
+          .neumorphic {
+            color: hsl(0 0% 80% / 0.75);
+            --shadow: -0.2rem -0.2rem 0.5rem hsl(0, 10%, 75%, 0.75),
+              0.2rem 0.2rem 0.5rem hsl(0 0% 75% / 0.5);
+            box-shadow: var(--shadow);
+
+            &:hover,
+            &:focus-visible {
+              color: hsl(0, 0%, 90%);
+            }
+
+            &:active,
+            &.active {
+              box-shadow:
+                var(--shadow),
+                inset 0.2rem 0.2rem 0.5rem hsl(0 0% 5% / 0.5),
+                inset -0.2rem -0.2rem 0.5rem hsl(0 0% 15% / 0.75);
+              color: hsl(180, 10%, 80%);
+            }
+          }
+        }
+        .list {
+          .delete-modal,
+          .confirm {
+            .modal-content {
+              background-color: $blue-800;
+              .modal-header {
+                .close {
+                  background-color: $blue-800;
+                }
+              }
+              .modal-body {
+                b {
+                  color: $yellow-500;
+                }
+              }
+            }
+          }
+          .album-modal {
+            .modal-header {
+              .modal-title,
+              .btn-close {
+                color: #e9ecef;
+              }
+            }
+            .modal-content {
+              background-color: $blue-800;
+              .form-check-label,
+              .form-label {
+                color: #e9ecef;
+              }
+            }
+          }
+        }
+      }
+    }
+
+    .filter-container {
+      .navbar {
+        background-color: $blue-800 !important;
+        .container-fluid {
+          .btn {
+            color: $gray-100;
+          }
+          span {
+            color: #f0f0f0;
+          }
+        }
+      }
+    }
+
+    // Стили для всех инпутов в dark theme
+    input.form-control,
+    select.form-select,
+    textarea.form-control {
+      background-color: $blue-900;
+      color: $gray-100;
+      border-color: $gray-700;
+
+      &::placeholder {
+        color: $gray-500;
+      }
+
+      &:focus {
+        color: $gray-100;
+        border-color: $primary;
+        box-shadow: 0 0 0 0.2rem rgba($primary, 0.25);
+      }
+
+      &:disabled {
+        background-color: $gray-700;
+        color: $gray-500;
+      }
+    }
+
+    // Label-ы
+    label {
+      color: $gray-200;
+    }
+  }
 }
 
 .app-container {
@@ -44,6 +167,25 @@ body {
       right: 10rem;
       .btn-group {
         height: 2.5rem;
+      }
+    }
+    .theme-switcher {
+      position: absolute;
+      top: 25px;
+      right: 18rem;
+      height: 2rem;
+      .form-check {
+        height: 100%;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        .form-check-input {
+          height: 1.5rem;
+          width: 3rem;
+        }
+        .form-check-label {
+          line-height: normal;
+        }
       }
     }
   }
@@ -83,7 +225,7 @@ body {
     flex-direction: column;
     width: 15rem;
     position: static;
-    margin-bottom: 1rem;
+    margin: 5rem 0 1rem 0;
   }
 
   .app-container {
@@ -107,16 +249,35 @@ body {
     margin-right: 0;
   }
 
+  .filter-container {
+    margin-top: 0;
+  }
+
   .app-container {
     .btn-container {
       width: 100%;
       display: flex;
       flex-direction: row;
       justify-content: space-between;
-      .logout-button,
+      .logout-button {
+        position: static;
+        margin: 1rem 1rem 0 0;
+        width: 20%;
+        min-width: max-content;
+        .logout-btn-text {
+          display: none;
+        }
+      }
+
       .language-switcher {
         position: static;
-        margin: 1rem;
+        margin: 1rem 0 0 0;
+      }
+
+      .theme-switcher {
+        position: static;
+        margin: 1rem 0 0 1rem;
+        width: 20%;
       }
     }
   }

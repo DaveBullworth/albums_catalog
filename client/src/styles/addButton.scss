@@ -76,8 +76,10 @@ h1 {
   gap: 2rem;
 }
 
-.form-check {
-  display: inline-grid;
+.album-modal {
+  .form-check {
+    display: inline-grid;
+  }
 }
 
 .review {
@@ -140,6 +142,9 @@ h1 {
   display: flex;
   align-items: center;
   justify-content: center;
+  &.confrim-modal {
+    width: fit-content;
+  }
 }
 
 .btn-success {

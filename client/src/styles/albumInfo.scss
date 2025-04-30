@@ -21,19 +21,17 @@ p {
 @media (max-width: 1280px) {
   .album-info {
     font-size: 12px;
-  }
-
-  .text-center {
-    font-size: 13px !important;
+    .text-center {
+      font-size: 13px !important;
+    }
   }
 }
 
 @media (max-width: 500px) {
   .album-info {
     font-size: 11px;
-  }
-
-  .text-center {
-    font-size: 12px !important;
+    .text-center {
+      font-size: 12px !important;
+    }
   }
 }
