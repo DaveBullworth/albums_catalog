@@ -107,5 +107,30 @@
   "theme": {
     "dark": "Dark",
     "light": "Light"
+  },
+  "userMenu": {
+    "logoutErrorHead": "Error when exiting!",
+    "logoutErrorBody": "Unexpected error when trying to log out!",
+    "edit": "Edit",
+    "delete": "Delete",
+    "logout": "Logout",
+    "editTitle": "Edit Profile",
+    "loginPlaceholder": "Login",
+    "loginLabel": "Login",
+    "passwordPlaceholder": "Password",
+    "passwordLabel": "New password (optional)",
+    "cancel": "Cancel",
+    "save": "Save",
+    "deleteTitle": "Confirm Deletion",
+    "confirmDelete": "Are you sure you want to delete user",
+    "deleteWarning": "All albums of this user will also be deleted!!!",
+    "validationErrorHead": "Validation Error",
+    "validationErrorBody": "Please correct login or password fields.",
+    "editErrorHead": "Update Failed",
+    "editErrorBody": "Could not update user data.",
+    "successHead": "Success",
+    "editSuccess": "User data updated successfully!",
+    "editDeleteHead": "Error when deleting a user!",
+    "deleteErrorBody": "Unexpected error when deleting a user!"
   }
 }

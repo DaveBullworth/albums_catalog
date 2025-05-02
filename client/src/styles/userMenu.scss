@@ -1,0 +1,31 @@
+@import '~bootstrap/scss/functions';
+@import '~bootstrap/scss/variables';
+
+.dropdown {
+  height: 100%;
+  .dropdown-toggle {
+    height: 100%;
+    color: #000;
+    &:hover {
+      color: white;
+      background-color: $blue-500;
+    }
+    &.show {
+      color: white;
+      background-color: $blue-700;
+    }
+    .bi {
+      line-height: normal;
+    }
+  }
+  .dropdown-menu {
+    .dropdown-item {
+      display: flex;
+      gap: 0.5rem;
+      padding: 0.3rem 0.8rem;
+      &.delete {
+        color: $red-500;
+      }
+    }
+  }
+}

@@ -225,6 +225,7 @@ const AlbumComponent = ({ reload, handleReloadAlbums, filters }) => {
         role="dialog"
         aria-labelledby="deleteModalLabel"
         aria-hidden="true"
+        data-bs-backdrop="static"
       >
         <div className="modal-dialog  delete-modal" role="document">
           <div className="modal-content">

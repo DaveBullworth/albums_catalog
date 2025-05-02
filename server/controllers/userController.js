@@ -118,7 +118,7 @@ class UserController {
   }
 
   async update(req, res, next) {
-    const { login, oldPassword, newPassword } = req.body;
+    const { login, newPassword } = req.body;
     try {
       const userId = req.user.id;
       // Find user
@@ -141,13 +141,7 @@ class UserController {
       }
 
       // Check and update password if provided
-      if (oldPassword && newPassword) {
-        // Verify old password
-        const isPasswordValid = await bcrypt.compare(oldPassword, user.password);
-        if (!isPasswordValid) {
-          return next(ApiError.badRequest(req.t('user.update.invalidPassword')));
-        }
-
+      if (newPassword) {
         // Hash new password
         updateData.password = await bcrypt.hash(newPassword, 5);
       }

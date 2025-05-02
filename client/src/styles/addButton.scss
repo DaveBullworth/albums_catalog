@@ -142,6 +142,9 @@ h1 {
   display: flex;
   align-items: center;
   justify-content: center;
+  @media (max-width: 1000px) {
+    width: fit-content;
+  }
   &.confrim-modal {
     width: fit-content;
   }

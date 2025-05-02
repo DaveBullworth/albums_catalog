@@ -47,7 +47,7 @@ export const getUser = async () => {
 
 // Update User Data
 export const updateUser = async (userData) => {
-  const { data } = await $authHost.put('api/user/update', userData);
+  const { data } = await $authHost.patch('api/user/update', userData);
   return data;
 };
 

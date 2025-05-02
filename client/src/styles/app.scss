@@ -73,18 +73,102 @@ body {
             }
           }
           .album-modal {
+            .modal-content {
+              background-color: $blue-800;
+              .modal-header {
+                .modal-title,
+                .btn-close {
+                  color: #e9ecef;
+                }
+              }
+              .form-check-label,
+              .form-label {
+                color: #e9ecef;
+              }
+            }
+          }
+        }
+        .album-modal {
+          .modal-content {
+            background-color: $blue-800;
             .modal-header {
               .modal-title,
               .btn-close {
                 color: #e9ecef;
               }
             }
-            .modal-content {
-              background-color: $blue-800;
-              .form-check-label,
-              .form-label {
-                color: #e9ecef;
+            .form-check-label,
+            .form-label {
+              color: #e9ecef;
+            }
+          }
+        }
+        .confirm {
+          .modal-content {
+            background-color: $blue-800;
+            .modal-header {
+              .close {
+                background-color: $blue-800;
               }
+            }
+            .modal-body {
+              b {
+                color: $yellow-500;
+              }
+            }
+          }
+        }
+      }
+      .btn-container {
+        .user-menu {
+          .dropdown {
+            .dropdown-toggle {
+              color: white;
+            }
+            .dropdown-menu {
+              background-color: $blue-700;
+              .dropdown-item {
+                color: white;
+                &:hover {
+                  background-color: $blue-800;
+                }
+                &.delete {
+                  color: red;
+                }
+              }
+            }
+          }
+        }
+      }
+      .edit-user {
+        .modal-content {
+          background-color: $blue-800;
+          .modal-body {
+            .form-floating {
+              input {
+                &::placeholder {
+                  color: transparent;
+                }
+                &:focus::placeholder {
+                  color: $gray-500; // показать на фокусе, если нужно
+                }
+              }
+              label {
+                color: $gray-400;
+                &::after {
+                  background-color: $blue-900;
+                }
+              }
+            }
+          }
+        }
+      }
+      .delete-user {
+        .modal-content {
+          background-color: $blue-800;
+          .modal-body {
+            .text {
+              color: $yellow-500;
             }
           }
         }
@@ -142,24 +226,14 @@ body {
   height: 100vh;
   margin: 0 auto;
   .btn-container {
-    .logout-button {
+    .user-menu {
       height: 2.5rem;
       position: absolute;
       top: 25px;
       right: 20px;
-      padding: 8px 12px;
-      background-color: #dc3545;
-      color: white;
-      border: none;
-      border-radius: 4px;
-      font-weight: bold;
       cursor: pointer;
-      z-index: 10;
+      z-index: unset;
       transition: background-color 0.3s;
-
-      &:hover {
-        background-color: #c82333;
-      }
     }
     .language-switcher {
       position: absolute;
@@ -185,6 +259,15 @@ body {
         }
         .form-check-label {
           line-height: normal;
+        }
+      }
+    }
+  }
+  .delete-user {
+    .modal-content {
+      .modal-body {
+        .text {
+          color: $red-500;
         }
       }
     }
@@ -259,7 +342,7 @@ body {
       display: flex;
       flex-direction: row;
       justify-content: space-between;
-      .logout-button {
+      .user-menu {
         position: static;
         margin: 1rem 1rem 0 0;
         width: 20%;
