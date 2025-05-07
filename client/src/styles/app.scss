@@ -36,7 +36,8 @@ body {
         .add-btn-container {
           .neumorphic {
             color: hsl(0 0% 80% / 0.75);
-            --shadow: -0.2rem -0.2rem 0.5rem hsl(0, 10%, 75%, 0.75),
+            --shadow:
+              -0.2rem -0.2rem 0.5rem hsl(0, 10%, 75%, 0.75),
               0.2rem 0.2rem 0.5rem hsl(0 0% 75% / 0.5);
             box-shadow: var(--shadow);
 
@@ -143,6 +144,7 @@ body {
       .edit-user {
         .modal-content {
           background-color: $blue-800;
+          color: $gray-100;
           .modal-body {
             .form-floating {
               input {
@@ -166,6 +168,7 @@ body {
       .delete-user {
         .modal-content {
           background-color: $blue-800;
+          color: $gray-100;
           .modal-body {
             .text {
               color: $yellow-500;

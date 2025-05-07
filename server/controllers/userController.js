@@ -1,4 +1,4 @@
-const bcrypt = require('bcrypt');
+// Импорт вместо bcrypt
 const jwt = require('jsonwebtoken');
 const { User } = require('../models/models');
 const ApiError = require('../error/apiError');
@@ -15,6 +15,9 @@ class UserController {
     const { login, password } = req.body;
 
     try {
+      // Динамический импорт scrypt-kdf
+      const scrypt = (await import('scrypt-kdf')).default; // Используем default экспорт
+
       // Check if user already exists
       const candidate = await User.findOne({ where: { login } });
       if (candidate) {
@@ -22,7 +25,8 @@ class UserController {
       }
 
       // Hash password
-      const hashPassword = await bcrypt.hash(password, 5);
+      const hashPasswordBuffer = await scrypt.kdf(password, { logN: 15 });
+      const hashPassword = hashPasswordBuffer.toString('base64');
 
       // Create user
       const user = await User.create({ login, password: hashPassword });
@@ -64,6 +68,8 @@ class UserController {
   async login(req, res, next) {
     const { login, password } = req.body;
     try {
+      // Динамический импорт scrypt-kdf
+      const scrypt = (await import('scrypt-kdf')).default; // Используем default экспорт
       // Find user
       const user = await User.findOne({ where: { login } });
       if (!user) {
@@ -71,7 +77,7 @@ class UserController {
       }
 
       // Check password
-      let comparePassword = bcrypt.compareSync(password, user.password);
+      let comparePassword = await scrypt.verify(Buffer.from(user.password, 'base64'), password);
       if (!comparePassword) {
         return next(ApiError.badRequest(req.t('user.login.invalidCredentials')));
       }
@@ -120,6 +126,8 @@ class UserController {
   async update(req, res, next) {
     const { login, newPassword } = req.body;
     try {
+      // Динамический импорт scrypt-kdf
+      const scrypt = (await import('scrypt-kdf')).default; // Используем default экспорт
       const userId = req.user.id;
       // Find user
       const user = await User.findByPk(userId);
@@ -143,7 +151,8 @@ class UserController {
       // Check and update password if provided
       if (newPassword) {
         // Hash new password
-        updateData.password = await bcrypt.hash(newPassword, 5);
+        const hash = await scrypt.kdf(newPassword, { logN: 15 });
+        updateData.password = hash.toString('base64');
       }
 
       // Perform update if there are changes

@@ -13,7 +13,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "bcrypt": "^5.1.1",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "dotenv": "^16.3.1",
@@ -26,6 +25,7 @@
     "pg": "^8.11.3",
     "pg-hstore": "^2.3.4",
     "puppeteer": "^23.6.0",
+    "scrypt-kdf": "^3.0.0",
     "sequelize": "^6.33.0",
     "winston": "^3.17.0"
   },
