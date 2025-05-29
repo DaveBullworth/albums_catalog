@@ -9,7 +9,7 @@ const attemptLimiter = rateLimit({
 
   // Кастомный обработчик ошибки
   handler: (req, res, next) => {
-    return next(ApiError.tooManyRequests(req.t('login.tooManyAttempts')));
+    return next(ApiError.tooManyRequests(req.t('user.login.tooManyAttempts')));
   },
 });
 

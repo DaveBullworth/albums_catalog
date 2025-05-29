@@ -149,7 +149,15 @@ Fill in the required variables in:
 
 You can use the provided examples above.
 
-### 3. Build and run containers
+### 3. Build the React client manually (required before Docker)
+```
+npm --prefix client ci
+npm --prefix client run build
+```
+
+This creates the production-ready frontend inside `client/build`, which will be served by Nginx.
+
+### 4. Build and run containers
 ```
 docker-compose up --build
 ```
@@ -160,20 +168,46 @@ The services:
 
 ## 🛠 Scripts
 
-### Client
+### 📦 Dependency Management
+
+Before running or building the project, it's recommended to install dependencies in a clean and reproducible way using `npm ci`:
+
 ```
-npm start         # Start React dev server
-npm run build     # Build production bundle
-npm run format    # Format with Prettier
+npm --prefix client ci       # Install exact versions from client/package-lock.json
+npm --prefix server ci       # Install exact versions from server/package-lock.json
 ```
 
-### Server
+To ensure there are no stale or corrupted cached packages, you can optionally clear the npm cache beforehand:
+
 ```
-npm run dev       # Start with nodemon
-npm run lint      # Lint code
-npm run lint:fix  # Fix lint issues
-npm run format    # Format with Prettier
+npm cache clean --force
 ```
+
+If you want to skip installing development dependencies on the server (e.g., in production), you can use:
+
+```
+npm --prefix server ci --omit=dev
+```
+
+---
+
+### 🎨 Client Scripts (`client/`)
+```
+npm start         # Start React development server on localhost:3000
+npm run build     # Build optimized production bundle to client/build
+npm run format    # Format code with Prettier
+```
+
+---
+
+### 🔧 Server Scripts (`server/`)
+```
+npm run dev       # Run Express server with nodemon for live reload
+npm run lint      # Run ESLint to check for lint issues
+npm run lint:fix  # Automatically fix lint issues
+npm run format    # Format server code using Prettier
+```
+
 
 ## ⚙️ Technologies
 
