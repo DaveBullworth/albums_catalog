@@ -2,12 +2,13 @@ const Router = require('express');
 const router = new Router();
 const userController = require('../controllers/userController');
 const authMiddleware = require('../middleware/authMiddleware');
+const { attemptLimiter } = require('../middleware/rateLimitMiddleware');
 
 // User registration
-router.post('/registration', userController.registration);
+router.post('/registration', attemptLimiter, userController.registration);
 
 // User login
-router.post('/login', userController.login);
+router.post('/login', attemptLimiter, userController.login);
 
 // User logout
 router.post('/logout', authMiddleware, userController.logout);

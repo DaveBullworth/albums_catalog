@@ -25,6 +25,7 @@ const AddButton = ({ onClick, handleReloadAlbums, editedAlbum }) => {
   const [initialAlbumData, setInitialAlbumData] = useState(emptyAlbumData);
   const [mainModal, setMainModal] = useState(null);
   const [confirmModal, setConfirmModal] = useState(null);
+  const [isParsing, setIsParsing] = useState(false);
 
   const handleResize = () => {
     setIsMobile(window.innerWidth < 1000);
@@ -249,6 +250,8 @@ const AddButton = ({ onClick, handleReloadAlbums, editedAlbum }) => {
       return;
     }
 
+    setIsParsing(true); // <-- включаем затемнение
+
     // Call parseAlbumLink function and handle the response
     parseAlbumLink(link)
       .then((albumInfo) => {
@@ -283,6 +286,9 @@ const AddButton = ({ onClick, handleReloadAlbums, editedAlbum }) => {
           head: t('addButton.errorHead', { message: error.message }),
           body: t('addButton.parseErrorBody'),
         });
+      })
+      .finally(() => {
+        setIsParsing(false); // <-- выключаем затемнение
       });
   };
 
@@ -324,12 +330,7 @@ const AddButton = ({ onClick, handleReloadAlbums, editedAlbum }) => {
   return (
     <>
       {!editedAlbum && (
-        <button
-          className="neumorphic"
-          onClick={onClick}
-          data-bs-toggle="modal"
-          data-bs-target="#exampleModal"
-        >
+        <button className="neumorphic" onClick={() => mainModal.show()}>
           <i className="fas fa-plus"></i>
         </button>
       )}
@@ -624,6 +625,12 @@ const AddButton = ({ onClick, handleReloadAlbums, editedAlbum }) => {
           </div>
         </div>
       </div>
+      {isParsing && (
+        <div className="loader-container">
+          <div className="loader-text">{t('addButton.apiLoading')}</div>
+          <div className="loader" />
+        </div>
+      )}
     </>
   );
 };

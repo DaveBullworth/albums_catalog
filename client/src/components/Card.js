@@ -71,7 +71,6 @@ const Card = ({
 
   const handleImageClick = (event) => {
     event.stopPropagation();
-    console.log(link);
     window.open(link, '_blank');
   };
 

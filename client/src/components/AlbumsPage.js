@@ -182,6 +182,7 @@ function AlbumsPage() {
           reload={reloadAlbums}
           handleReloadAlbums={handleReloadAlbums}
           filters={filters}
+          showToastMessage={showToastMessage}
         />
         <div className="add-btn-container">
           <AddButton handleReloadAlbums={handleReloadAlbums} />

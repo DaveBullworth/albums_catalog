@@ -40,6 +40,7 @@
     "validationErrorBody": "Please fill in the required fields: {{fields}}.",
     "reviewTooLong": "The review cannot be longer than 1,500 characters",
     "fieldTooLong": "This field cannot be longer than 200 characters.",
+    "apiLoading": "Waiting for a response from Spotify...",
     "fields": {
       "cover": "Cover",
       "nameAlbum": "Album Name",

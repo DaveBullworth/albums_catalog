@@ -1,5 +1,72 @@
-const puppeteer = require('puppeteer');
+const axios = require('axios');
 const { logError } = require('../utils/logger');
+
+//TODO: Кеширование ответов через Redis, дополнительная защита от спама express-rate-limit
+
+const clientId = process.env.SPOTIFY_CLIENT_ID;
+const clientSecret = process.env.SPOTIFY_CLIENT_SECRET;
+
+let cachedToken = null;
+let tokenExpiresAt = 0;
+
+async function getAccessToken() {
+  if (cachedToken && Date.now() < tokenExpiresAt) {
+    return cachedToken;
+  }
+
+  try {
+    const params = 'grant_type=client_credentials';
+    const authHeader = Buffer.from(`${clientId}:${clientSecret}`).toString('base64');
+
+    const response = await axios.post('https://accounts.spotify.com/api/token', params, {
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        Authorization: `Basic ${authHeader}`,
+      },
+    });
+
+    cachedToken = response.data.access_token;
+    tokenExpiresAt = Date.now() + response.data.expires_in * 1000 - 60000; // -1 мин запас
+    return cachedToken;
+  } catch (error) {
+    logError(error, 'ParseController: Ошибка при получении токена Spotify');
+    throw error;
+  }
+}
+
+function extractAlbumId(url) {
+  const match = url.match(/album\/([a-zA-Z0-9]+)/);
+  return match ? match[1] : null;
+}
+
+async function fetchAlbumDataFromSpotifyPage(spotifyAlbumLink) {
+  try {
+    const albumId = extractAlbumId(spotifyAlbumLink);
+    if (!albumId) throw new Error('Invalid Spotify album link');
+
+    const token = await getAccessToken();
+
+    const response = await axios.get(`https://api.spotify.com/v1/albums/${albumId}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+
+    const data = response.data;
+
+    return {
+      albumName: data.name,
+      bandName: data.artists.map((a) => a.name).join(', '),
+      year: data.release_date.split('-')[0],
+      cover: data.images?.[0]?.url || null,
+      tracks: data.tracks.items.map((track) => ({
+        trackName: track.name,
+        trackLink: track.external_urls.spotify,
+      })),
+    };
+  } catch (error) {
+    logError(error, 'ParseController: ошибка при получении данных альбома Spotify');
+    return null;
+  }
+}
 
 class ParseController {
   async get(req, res) {
@@ -28,70 +95,5 @@ class ParseController {
     }
   }
 }
-
-const fetchAlbumDataFromSpotifyPage = async (spotifyAlbumLink) => {
-  try {
-    const browser = await puppeteer.launch(); // Запускаем браузер
-    const page = await browser.newPage(); // Создаем новую страницу
-
-    // Переходим по ссылке на страницу с альбомом
-    await page.goto(spotifyAlbumLink);
-
-    // Ждем, пока загрузится содержимое страницы (например, по какому-то селектору)
-    await page.waitForSelector('[data-testid="entityTitle"]');
-
-    const albumData = await page.evaluate(() => {
-      // Находим span по атрибуту data-testid
-      const entityTitleSpan = document.querySelector('[data-testid="entityTitle"]');
-
-      // Внутри span ищем элемент h1
-      const albumNameElement = entityTitleSpan
-        ? entityTitleSpan.querySelector('h1').textContent.trim()
-        : null;
-
-      const entityBandSpan = document.querySelector('[data-testid="creator-link"]');
-      const bandNameElement = entityBandSpan ? entityBandSpan.textContent.trim() : null;
-
-      const yearSpan = document.querySelector(
-        'span.encore-text.encore-text-body-small.RANLXG3qKB61Bh33I0r2'
-      );
-      const yearElement = yearSpan ? yearSpan.textContent.trim() : null;
-
-      // Извлекаем информацию о треках
-      const trackElements = document.querySelectorAll('div[data-testid="tracklist-row"]');
-      const tracks = Array.from(trackElements).map((trackElement) => {
-        const trackLinkElement = trackElement.querySelector('div[aria-colindex="2"] a');
-        const trackNameElement = trackLinkElement.querySelector('div');
-        const trackLink = trackLinkElement.href;
-        const trackName = trackNameElement.textContent.trim();
-        return { trackName, trackLink };
-      });
-
-      const imgElement = document.querySelector('img.mMx2LUixlnN_Fu45JpFB');
-      const imgSrcSet = imgElement ? imgElement.getAttribute('srcset') : '';
-      const imgSrc = imgSrcSet
-        .split(',')
-        .find((src) => src.includes('640w'))
-        .trim()
-        .split(' ')[0];
-
-      return {
-        albumName: albumNameElement,
-        bandName: bandNameElement,
-        year: yearElement,
-        tracks: tracks,
-        cover: imgSrc,
-      };
-    });
-    // Закрываем браузер
-    await browser.close();
-
-    // Возвращаем данные альбома
-    return albumData;
-  } catch (error) {
-    logError(error, 'ParseController: ошибка при парсинге страницы Spotify');
-    return null;
-  }
-};
 
 module.exports = new ParseController();

@@ -9,6 +9,10 @@ body,
   font-family: 'Space Grotesk RU';
 }
 
+body::-webkit-scrollbar {
+  display: none; /* Chrome, Safari */
+}
+
 body {
   background-color: #e5e9f4;
   -webkit-font-smoothing: antialiased;
@@ -55,11 +59,17 @@ body {
               color: hsl(180, 10%, 80%);
             }
           }
+          .modal.confirm {
+            .modal-content {
+              color: #fff;
+            }
+          }
         }
         .list {
           .delete-modal,
           .confirm {
             .modal-content {
+              color: #fff;
               background-color: $blue-800;
               .modal-header {
                 .close {

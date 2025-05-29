@@ -6,7 +6,7 @@ import AlbumInfo from './AlbumInfo';
 import { fetchAlbums, fetchOneAlbum, deleteAlbum } from '../http/albumApi';
 import '../styles/albumComponent.scss';
 
-const AlbumComponent = ({ reload, handleReloadAlbums, filters }) => {
+const AlbumComponent = ({ reload, handleReloadAlbums, filters, showToastMessage }) => {
   const { t } = useTranslation();
   const [albumData, setAlbumData] = useState([]);
   const [selectedAlbum, setSelectedAlbum] = useState(null);
@@ -16,7 +16,6 @@ const AlbumComponent = ({ reload, handleReloadAlbums, filters }) => {
   const [_deleteAlbum, setDeleteAlbum] = useState(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editAlbumData, setEditAlbumData] = useState(null);
-  const [toastMessage, setToastMessage] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const PAGE_SIZE = 3;
@@ -112,8 +111,9 @@ const AlbumComponent = ({ reload, handleReloadAlbums, filters }) => {
         head: t('albumComponent.successHeadDelete'),
         body: (
           <span>
-            {t('albumComponent.successBodyDelete')} <strong>{_deleteAlbum.nameBand}</strong> -{' '}
-            <strong>{_deleteAlbum.nameAlbum}</strong>
+            {t('albumComponent.successBodyDelete')}{' '}
+            <strong style={{ color: 'black' }}>{_deleteAlbum.nameBand}</strong> -{' '}
+            <strong style={{ color: 'black' }}>{_deleteAlbum.nameAlbum}</strong>
           </span>
         ),
       });
@@ -144,13 +144,6 @@ const AlbumComponent = ({ reload, handleReloadAlbums, filters }) => {
       setEditAlbumData(data);
     });
     setIsEditModalOpen(true);
-  };
-
-  const showToastMessage = (message) => {
-    setToastMessage(message);
-    setTimeout(() => {
-      window.$('#delToast').toast('show');
-    }, 0);
   };
 
   const handlePageChange = (pageNumber) => {
@@ -274,30 +267,6 @@ const AlbumComponent = ({ reload, handleReloadAlbums, filters }) => {
                 {t('albumComponent.delete')}
               </button>
             </div>
-          </div>
-        </div>
-      </div>
-      {/* Toast Message (delete)*/}
-      <div className="position-fixed bottom-0 end-0 p-3" style={{ zIndex: '11' }}>
-        <div
-          className="toast"
-          id="delToast"
-          role="alert"
-          aria-live="assertive"
-          aria-atomic="true"
-          style={{ animation: 'slideInRight 0.5s forwards' }}
-        >
-          <div className={`toast-header ${toastMessage.type === 'error' ? 'error' : 'success'}`}>
-            <strong className="me-auto">{toastMessage.head}</strong>
-            <button
-              type="button"
-              className="btn-close"
-              data-bs-dismiss="toast"
-              aria-label="Close"
-            />
-          </div>
-          <div className={`toast-body ${toastMessage.type === 'error' ? 'error' : 'success'}`}>
-            {toastMessage.body}
           </div>
         </div>
       </div>

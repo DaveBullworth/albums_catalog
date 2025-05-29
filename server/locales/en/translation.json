@@ -9,7 +9,8 @@
     },
     "login": {
       "invalidCredentials": "Invalid credentials",
-      "internalError": "Internal server error"
+      "internalError": "Internal server error",
+      "tooManyAttempts": "Too many attempts. Try again later."
     },
     "logout": {
       "success": "You have successfully logged out of the system",

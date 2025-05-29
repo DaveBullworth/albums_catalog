@@ -3,6 +3,7 @@ const express = require('express');
 const i18next = require('./i18n');
 const i18nextMiddleware = require('i18next-http-middleware');
 const sequelize = require('./db');
+const { createDbIfNotExists, waitForPostgres } = require('./db');
 const cors = require('cors');
 const fileUpload = require('express-fileupload');
 const router = require('./routes/index.js');
@@ -30,8 +31,10 @@ app.use('/api', router);
 app.use(errorHandler);
 async function start() {
   try {
-    await sequelize.authenticate();
-    await sequelize.sync();
+    await waitForPostgres(); // 1) ждём готовности PostgreSQL
+    await createDbIfNotExists(); // 2) Создаем базу, если нет
+    await sequelize.authenticate(); // 3) Подключаемся к базе
+    await sequelize.sync(); // 4) Синхронизируем модели (таблицы)
     // eslint-disable-next-line no-console
     app.listen(PORT, () => console.log(`Server started on PORT ${PORT}`));
   } catch (error) {
