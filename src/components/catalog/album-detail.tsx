@@ -60,7 +60,7 @@ export function AlbumDetail({ album }: { album: AlbumWithTracks }) {
             {album.tracks.map((track) => (
               <li
                 key={track.id}
-                className="flex items-center gap-3 px-3.5 py-2.5 transition hover:bg-white/[0.03]"
+                className="group flex items-center gap-3 px-3.5 py-2.5 transition hover:bg-white/[0.03]"
               >
                 <span className="w-5 shrink-0 text-right font-mono text-xs text-dim">
                   {track.position}
@@ -70,7 +70,7 @@ export function AlbumDetail({ album }: { album: AlbumWithTracks }) {
                     href={track.spotify_url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="min-w-0 flex-1 truncate text-sm text-text transition hover:accent-text"
+                    className="min-w-0 flex-1 truncate text-sm text-text transition group-hover:accent-text"
                   >
                     {track.name}
                   </a>

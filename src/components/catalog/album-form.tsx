@@ -258,20 +258,24 @@ export function AlbumForm({
           </div>
 
           {/* Core fields */}
-          <div className="grid gap-5 sm:grid-cols-[auto_1fr]">
-            <AlbumCover
-              src={form.coverUrl}
-              alt={form.name || "?"}
-              color={accent}
-              className="w-full rounded-xl accent-ring sm:w-36"
-              sizes="160px"
-            />
+          <div className="grid gap-5 sm:grid-cols-[11rem_1fr]">
+            {/* stretch the cover to the full height of the fields column */}
+            <div className="relative sm:self-stretch">
+              <AlbumCover
+                src={form.coverUrl}
+                alt={form.name || "?"}
+                color={accent}
+                className="w-full rounded-xl accent-ring sm:absolute sm:inset-0 sm:aspect-auto sm:h-full"
+                sizes="220px"
+              />
+            </div>
             <div className="flex flex-col gap-4">
               <Field label={t("form.name")} htmlFor="f-name">
                 <Input
                   id="f-name"
                   value={form.name}
                   maxLength={200}
+                  placeholder={t("form.namePh")}
                   onChange={(e) => patch({ name: e.target.value })}
                 />
               </Field>
@@ -281,6 +285,7 @@ export function AlbumForm({
                     id="f-artist"
                     value={form.artist}
                     maxLength={200}
+                    placeholder={t("form.artistPh")}
                     onChange={(e) => patch({ artist: e.target.value })}
                   />
                 </Field>
@@ -290,6 +295,7 @@ export function AlbumForm({
                     value={form.year}
                     inputMode="numeric"
                     maxLength={4}
+                    placeholder={t("form.yearPh")}
                     className="text-center"
                     onChange={(e) =>
                       /^\d{0,4}$/.test(e.target.value) && patch({ year: e.target.value })
@@ -298,22 +304,36 @@ export function AlbumForm({
                 </Field>
               </div>
               <div className="flex items-center gap-5">
-                <button
-                  type="button"
-                  onClick={() => patch({ liked: !form.liked })}
-                  className="flex items-center gap-2 text-sm text-muted"
-                >
-                  <LikeToggle active={form.liked} size="sm" />
-                  {t("form.liked")}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => patch({ favorite: !form.favorite })}
-                  className="flex items-center gap-2 text-sm text-muted"
-                >
-                  <FavToggle active={form.favorite} size="sm" />
-                  {t("form.favorite")}
-                </button>
+                {/* toggle and its text label are sibling buttons — a button
+                    must never nest another button (hydration error) */}
+                <div className="flex items-center gap-2">
+                  <LikeToggle
+                    active={form.liked}
+                    onClick={() => patch({ liked: !form.liked })}
+                    size="sm"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => patch({ liked: !form.liked })}
+                    className="text-sm text-muted transition hover:text-text"
+                  >
+                    {t("form.liked")}
+                  </button>
+                </div>
+                <div className="flex items-center gap-2">
+                  <FavToggle
+                    active={form.favorite}
+                    onClick={() => patch({ favorite: !form.favorite })}
+                    size="sm"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => patch({ favorite: !form.favorite })}
+                    className="text-sm text-muted transition hover:text-text"
+                  >
+                    {t("form.favorite")}
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -333,6 +353,7 @@ export function AlbumForm({
               value={form.review}
               maxLength={2000}
               rows={4}
+              placeholder={t("form.reviewPh")}
               onChange={(e) => patch({ review: e.target.value })}
             />
           </Field>

@@ -63,6 +63,7 @@ export function AuthForm({ mode }: { mode: "login" | "register" }) {
             autoComplete="username"
             autoCapitalize="none"
             spellCheck={false}
+            placeholder={t("auth.usernamePh")}
             required
           />
         </Field>
@@ -78,6 +79,7 @@ export function AuthForm({ mode }: { mode: "login" | "register" }) {
               name="password"
               type={show ? "text" : "password"}
               autoComplete={isRegister ? "new-password" : "current-password"}
+              placeholder={t("auth.passwordPh")}
               className="pr-11"
               required
             />

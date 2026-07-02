@@ -43,6 +43,7 @@ export function AccountForm({ username }: { username: string }) {
               defaultValue={username}
               autoCapitalize="none"
               spellCheck={false}
+              placeholder={t("auth.usernamePh")}
             />
           </Field>
           <Field
@@ -55,6 +56,7 @@ export function AccountForm({ username }: { username: string }) {
               name="newPassword"
               type="password"
               autoComplete="new-password"
+              placeholder={t("auth.passwordPh")}
             />
           </Field>
           <div>

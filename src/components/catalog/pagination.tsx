@@ -1,7 +1,9 @@
 "use client";
 
+import { useEffect, useState, useTransition } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { Spinner } from "@/components/ui/spinner";
 import { cn } from "@/lib/utils";
 
 export function Pagination({
@@ -14,14 +16,22 @@ export function Pagination({
   const router = useRouter();
   const pathname = usePathname();
   const sp = useSearchParams();
+  const [isPending, startTransition] = useTransition();
+  const [target, setTarget] = useState<number | null>(null);
+
+  // Clear the in-flight marker once the new page has rendered.
+  useEffect(() => setTarget(null), [page]);
 
   if (pageCount <= 1) return null;
 
   function go(p: number) {
+    setTarget(p);
     const params = new URLSearchParams(sp.toString());
     if (p <= 1) params.delete("page");
     else params.set("page", String(p));
-    router.push(`${pathname}?${params.toString()}`, { scroll: true });
+    startTransition(() => {
+      router.push(`${pathname}?${params.toString()}`, { scroll: true });
+    });
   }
 
   // Windowed page numbers around the current page.
@@ -37,7 +47,7 @@ export function Pagination({
     <nav className="flex items-center justify-center gap-1.5 pt-2">
       <button
         onClick={() => go(page - 1)}
-        disabled={page <= 1}
+        disabled={page <= 1 || isPending}
         className={cn(btn, "border-line bg-surface/50 text-muted hover:text-text")}
         aria-label="Previous page"
       >
@@ -47,6 +57,7 @@ export function Pagination({
         <button
           key={p}
           onClick={() => go(p)}
+          disabled={isPending}
           className={cn(
             btn,
             p === page
@@ -54,12 +65,12 @@ export function Pagination({
               : "border-line bg-surface/50 text-muted hover:text-text",
           )}
         >
-          {p}
+          {isPending && target === p ? <Spinner className="size-4" /> : p}
         </button>
       ))}
       <button
         onClick={() => go(page + 1)}
-        disabled={page >= pageCount}
+        disabled={page >= pageCount || isPending}
         className={cn(btn, "border-line bg-surface/50 text-muted hover:text-text")}
         aria-label="Next page"
       >
