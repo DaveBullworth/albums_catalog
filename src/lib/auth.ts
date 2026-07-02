@@ -30,9 +30,16 @@ const EMPTY: AuthContext = {
  */
 export async function getAuthContext(): Promise<AuthContext> {
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+
+  let user = null;
+  try {
+    ({
+      data: { user },
+    } = await supabase.auth.getUser());
+  } catch {
+    // Supabase unreachable / misconfigured — treat as signed out.
+    return EMPTY;
+  }
   if (!user) return EMPTY;
 
   const { data: profile } = await supabase
