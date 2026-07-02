@@ -3,22 +3,6 @@
 -- Run this in the Supabase SQL editor (or via `supabase db push`).
 -- ============================================================
 
--- ---------- helper: is the current user an admin? -----------
--- SECURITY DEFINER so it bypasses RLS and never recurses into
--- the profiles policies below.
-create or replace function public.is_admin()
-returns boolean
-language sql
-security definer
-stable
-set search_path = public
-as $$
-  select exists (
-    select 1 from public.profiles
-    where id = auth.uid() and role = 'admin'
-  );
-$$;
-
 -- ---------------------- profiles ----------------------------
 create table if not exists public.profiles (
   id         uuid primary key references auth.users (id) on delete cascade,
@@ -97,6 +81,23 @@ drop trigger if exists on_auth_user_created on auth.users;
 create trigger on_auth_user_created
   after insert on auth.users
   for each row execute function public.handle_new_user();
+
+-- ---------- helper: is the current user an admin? -----------
+-- Defined after the tables exist (an SQL-language function body is validated
+-- at creation time). SECURITY DEFINER so it bypasses RLS and never recurses
+-- into the profiles policies below.
+create or replace function public.is_admin()
+returns boolean
+language sql
+security definer
+stable
+set search_path = public
+as $$
+  select exists (
+    select 1 from public.profiles
+    where id = auth.uid() and role = 'admin'
+  );
+$$;
 
 -- ============================================================
 -- Row Level Security
