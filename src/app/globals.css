@@ -1,0 +1,243 @@
+@import "tailwindcss";
+
+/* ============================================================
+   RESONANCE — dark / neon design system
+   A music-catalogue aesthetic: near-black space, glass surfaces,
+   neon brand duotone (electric indigo + mint), and a per-album
+   accent driven by the cover's dominant colour (--cover).
+   ============================================================ */
+
+@theme {
+  /* base surfaces — deep space with a cool undertone */
+  --color-bg: #06070c;
+  --color-bg-2: #0a0c14;
+  --color-surface: #10131d;
+  --color-surface-2: #161a28;
+  --color-line: #232838;
+  --color-line-soft: #1a1e2b;
+
+  /* type */
+  --color-text: #f3f4fa;
+  --color-muted: #9aa1ba;
+  --color-dim: #5b6178;
+
+  /* neon brand duotone */
+  --color-accent: #7c6cff; /* electric indigo */
+  --color-accent-2: #1fe0c4; /* neon mint */
+
+  /* semantic neon */
+  --color-like: #ff4d72; /* heart / liked */
+  --color-fav: #ffd166; /* star / favourite */
+  --color-success: #2ee6a6;
+  --color-danger: #ff5c7a;
+  --color-warning: #ffb454;
+
+  /* fonts (wired up in layout.tsx) */
+  --font-display: var(--font-display-src), "Space Grotesk", sans-serif;
+  --font-sans: var(--font-sans-src), system-ui, sans-serif;
+  --font-mono: var(--font-mono-src), ui-monospace, monospace;
+
+  /* motion */
+  --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* ----------------------------------------------------------------
+   Base
+   ---------------------------------------------------------------- */
+@layer base {
+  * {
+    border-color: var(--color-line);
+  }
+
+  html {
+    color-scheme: dark;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background-color: var(--color-bg);
+    color: var(--color-text);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    min-height: 100dvh;
+  }
+
+  /* fixed aurora + grain backdrop — sits behind all content */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -2;
+    background:
+      radial-gradient(60rem 60rem at 12% -10%, color-mix(in oklab, var(--color-accent) 28%, transparent), transparent 60%),
+      radial-gradient(50rem 50rem at 100% 0%, color-mix(in oklab, var(--color-accent-2) 20%, transparent), transparent 55%),
+      radial-gradient(70rem 70rem at 80% 110%, color-mix(in oklab, #ff5dd2 16%, transparent), transparent 60%),
+      var(--color-bg);
+    background-attachment: fixed;
+  }
+
+  body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    opacity: 0.045;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  ::selection {
+    background: color-mix(in oklab, var(--color-accent) 40%, transparent);
+    color: #fff;
+  }
+
+  /* scrollbar */
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--color-line);
+    border-radius: 999px;
+    border: 2px solid transparent;
+    background-clip: padding-box;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--color-surface-2);
+    background-clip: padding-box;
+  }
+
+  :focus-visible {
+    outline: 2px solid color-mix(in oklab, var(--color-accent) 70%, white);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  h1, h2, h3, h4 {
+    font-family: var(--font-display);
+    letter-spacing: -0.02em;
+  }
+}
+
+/* ----------------------------------------------------------------
+   Utilities
+   ---------------------------------------------------------------- */
+
+/* translucent glass surface with a hairline gradient border */
+@utility glass {
+  background: linear-gradient(
+    180deg,
+    color-mix(in oklab, var(--color-surface) 82%, transparent),
+    color-mix(in oklab, var(--color-bg-2) 86%, transparent)
+  );
+  backdrop-filter: blur(16px) saturate(140%);
+  border: 1px solid color-mix(in oklab, white 8%, transparent);
+  box-shadow:
+    0 1px 0 0 color-mix(in oklab, white 6%, transparent) inset,
+    0 24px 60px -28px rgba(0, 0, 0, 0.8);
+}
+
+/* a subtle raised panel without blur (cheaper) */
+@utility panel {
+  background: linear-gradient(180deg, var(--color-surface), var(--color-bg-2));
+  border: 1px solid var(--color-line);
+  box-shadow: 0 20px 50px -30px rgba(0, 0, 0, 0.9);
+}
+
+/* glowing neon text using the brand accent */
+@utility neon-text {
+  color: color-mix(in oklab, var(--color-accent) 30%, white);
+  text-shadow:
+    0 0 16px color-mix(in oklab, var(--color-accent) 55%, transparent),
+    0 0 40px color-mix(in oklab, var(--color-accent) 25%, transparent);
+}
+
+/* accent helpers driven by the per-album --cover variable
+   (falls back to brand accent when no cover colour is set) */
+@utility accent-glow {
+  box-shadow:
+    0 0 0 1px color-mix(in oklab, var(--cover, var(--color-accent)) 40%, transparent),
+    0 18px 50px -18px color-mix(in oklab, var(--cover, var(--color-accent)) 55%, transparent);
+}
+
+@utility accent-ring {
+  box-shadow: 0 0 0 1px color-mix(in oklab, var(--cover, var(--color-accent)) 50%, transparent);
+}
+
+@utility accent-text {
+  color: var(--cover, var(--color-accent));
+}
+
+@utility accent-bg-soft {
+  background: color-mix(in oklab, var(--cover, var(--color-accent)) 14%, transparent);
+}
+
+/* animated gradient sheen for hover states */
+@utility sheen {
+  position: relative;
+  overflow: hidden;
+}
+
+/* hairline divider */
+@utility hr-soft {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--color-line), transparent);
+}
+
+/* ----------------------------------------------------------------
+   Keyframes
+   ---------------------------------------------------------------- */
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes glow-pulse {
+  0%, 100% {
+    opacity: 0.55;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes spin-slow {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+.animate-rise {
+  animation: rise-in 0.5s var(--ease-out-soft) both;
+}
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+.spin-slow {
+  animation: spin-slow 14s linear infinite;
+}
