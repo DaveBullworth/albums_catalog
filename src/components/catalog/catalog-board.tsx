@@ -118,7 +118,7 @@ export function CatalogBoard({
       ) : (
         <motion.div
           layout
-          className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4"
+          className="grid grid-cols-2 gap-2.5 sm:grid-cols-3 sm:gap-4 lg:grid-cols-4"
         >
           <AnimatePresence mode="popLayout">
             {albums.map((album, i) => (

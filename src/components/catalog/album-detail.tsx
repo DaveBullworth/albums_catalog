@@ -12,7 +12,7 @@ export function AlbumDetail({ album }: { album: AlbumWithTracks }) {
 
   return (
     <div style={{ "--cover": accent } as React.CSSProperties}>
-      <div className="flex flex-col gap-5 sm:flex-row">
+      <div className="flex flex-col gap-4 sm:flex-row sm:gap-5">
         <div className="shrink-0">
           <AlbumCover
             src={album.cover_url}
@@ -49,7 +49,7 @@ export function AlbumDetail({ album }: { album: AlbumWithTracks }) {
         </div>
       </div>
 
-      <section className="mt-6">
+      <section className="mt-5 sm:mt-6">
         <h4 className="mb-2 text-xs font-semibold uppercase tracking-wide text-dim">
           {t("catalog.tracklist")}
         </h4>
@@ -60,7 +60,7 @@ export function AlbumDetail({ album }: { album: AlbumWithTracks }) {
             {album.tracks.map((track) => (
               <li
                 key={track.id}
-                className="group flex items-center gap-3 px-3.5 py-2.5 transition hover:bg-white/[0.03]"
+                className="group flex items-center gap-3 px-3 py-2 transition hover:bg-white/[0.03] sm:px-3.5 sm:py-2.5"
               >
                 <span className="w-5 shrink-0 text-right font-mono text-xs text-dim">
                   {track.position}
@@ -92,7 +92,7 @@ export function AlbumDetail({ album }: { album: AlbumWithTracks }) {
         )}
       </section>
 
-      <section className="mt-6">
+      <section className="mt-5 sm:mt-6">
         <h4 className="mb-2 text-xs font-semibold uppercase tracking-wide text-dim">
           {t("catalog.review")}
         </h4>

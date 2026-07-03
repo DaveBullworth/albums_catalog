@@ -32,7 +32,7 @@ export function AccountForm({ username }: { username: string }) {
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="glass rounded-3xl p-6">
+      <div className="glass rounded-3xl p-4 sm:p-6">
         <h2 className="text-lg font-semibold text-text">{t("account.title")}</h2>
         <p className="mt-0.5 text-sm text-muted">{t("account.subtitle")}</p>
         <form action={action} className="mt-5 flex flex-col gap-4">
@@ -67,7 +67,7 @@ export function AccountForm({ username }: { username: string }) {
         </form>
       </div>
 
-      <div className="rounded-3xl border border-danger/25 bg-danger/5 p-6">
+      <div className="rounded-3xl border border-danger/25 bg-danger/5 p-4 sm:p-6">
         <h2 className="text-lg font-semibold text-danger">
           {t("account.dangerZone")}
         </h2>

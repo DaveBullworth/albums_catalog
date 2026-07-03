@@ -47,11 +47,11 @@ export function AlbumCard({
             />
             <div className="pointer-events-none absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
             {album.year && (
-              <span className="absolute left-3 top-3 rounded-full bg-black/45 px-2 py-0.5 font-mono text-xs text-white/85 backdrop-blur-sm">
+              <span className="absolute left-2 top-2 rounded-full bg-black/45 px-2 py-0.5 font-mono text-xs text-white/85 backdrop-blur-sm sm:left-3 sm:top-3">
                 {album.year}
               </span>
             )}
-            <div className="absolute inset-x-0 bottom-0 p-3.5">
+            <div className="absolute inset-x-0 bottom-0 p-2.5 sm:p-3.5">
               <p className="truncate font-display font-semibold text-white">
                 {album.name}
               </p>
@@ -60,7 +60,7 @@ export function AlbumCard({
           </div>
         </button>
 
-        <div className="flex items-center justify-between gap-2 px-3 py-2.5">
+        <div className="flex items-center justify-between gap-2 px-2 py-2 sm:px-3 sm:py-2.5">
           <div className="flex items-center gap-1.5">
             <LikeToggle active={album.liked} onClick={onToggleLike} size="sm" />
             <FavToggle active={album.favorite} onClick={onToggleFav} size="sm" />

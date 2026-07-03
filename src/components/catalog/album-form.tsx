@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useTransition } from "react";
+import { useEffect, useRef, useState, useTransition } from "react";
 import { Plus, X, Sparkles, Star } from "lucide-react";
 import { useI18n } from "@/components/providers/i18n-provider";
 import { useToast } from "@/components/providers/toast-provider";
@@ -93,6 +93,26 @@ export function AlbumForm({
   const [importing, startImport] = useTransition();
   const [saving, startSave] = useTransition();
   const [confirmClose, setConfirmClose] = useState(false);
+
+  // Keep the cover a perfect 1:1 square exactly as tall as the fields column
+  // (CSS alone can't transfer a stretched flex height into a width).
+  const fieldsColRef = useRef<HTMLDivElement | null>(null);
+  const [coverPx, setCoverPx] = useState<number | null>(null);
+  useEffect(() => {
+    if (!open) return;
+    const el = fieldsColRef.current;
+    if (!el) return;
+    const mq = window.matchMedia("(min-width: 640px)");
+    const measure = () => setCoverPx(mq.matches ? el.offsetHeight : null);
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(el);
+    mq.addEventListener("change", measure);
+    return () => {
+      ro.disconnect();
+      mq.removeEventListener("change", measure);
+    };
+  }, [open]);
 
   const isEdit = Boolean(initial);
   const accent = form.dominantColor ?? "var(--color-accent)";
@@ -232,9 +252,12 @@ export function AlbumForm({
           </>
         }
       >
-        <div style={{ "--cover": accent } as React.CSSProperties} className="flex flex-col gap-6">
+        <div
+          style={{ "--cover": accent } as React.CSSProperties}
+          className="flex flex-col gap-4 sm:gap-6"
+        >
           {/* Spotify import */}
-          <div className="rounded-2xl border border-line/70 bg-bg-2/40 p-4">
+          <div className="rounded-2xl border border-line/70 bg-bg-2/40 p-3 sm:p-4">
             <p className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-dim">
               <Sparkles className="size-3.5 accent-text" />
               {t("form.importLabel")}
@@ -258,18 +281,20 @@ export function AlbumForm({
           </div>
 
           {/* Core fields */}
-          <div className="grid gap-5 sm:grid-cols-[11rem_1fr]">
-            {/* stretch the cover to the full height of the fields column */}
-            <div className="relative sm:self-stretch">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:gap-5">
+            <div
+              className="relative aspect-square w-full shrink-0"
+              style={coverPx ? { width: coverPx, height: coverPx } : undefined}
+            >
               <AlbumCover
                 src={form.coverUrl}
                 alt={form.name || "?"}
                 color={accent}
-                className="w-full rounded-xl accent-ring sm:absolute sm:inset-0 sm:aspect-auto sm:h-full"
-                sizes="220px"
+                className="absolute inset-0 aspect-auto h-full w-full rounded-xl accent-ring"
+                sizes="260px"
               />
             </div>
-            <div className="flex flex-col gap-4">
+            <div ref={fieldsColRef} className="flex min-w-0 flex-1 flex-col gap-4">
               <Field label={t("form.name")} htmlFor="f-name">
                 <Input
                   id="f-name"

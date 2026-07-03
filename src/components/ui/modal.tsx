@@ -55,7 +55,7 @@ export function Modal({
     <AnimatePresence>
       {open && (
         <motion.div
-          className="fixed inset-0 z-[150] grid place-items-center p-4 sm:p-6"
+          className="fixed inset-0 z-[150] grid place-items-center p-2.5 sm:p-6"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
@@ -68,7 +68,7 @@ export function Modal({
             role="dialog"
             aria-modal="true"
             className={cn(
-              "glass relative z-10 flex max-h-[88dvh] w-full flex-col overflow-hidden rounded-3xl",
+              "glass relative z-10 flex max-h-[92dvh] w-full flex-col overflow-hidden rounded-2xl sm:max-h-[88dvh] sm:rounded-3xl",
               SIZES[size],
               className,
             )}
@@ -78,7 +78,7 @@ export function Modal({
             transition={{ type: "spring", stiffness: 320, damping: 30 }}
           >
             {title && (
-              <div className="flex items-center justify-between gap-4 border-b border-line/70 px-6 py-4">
+              <div className="flex items-center justify-between gap-4 border-b border-line/70 px-4 py-3 sm:px-6 sm:py-4">
                 <h2 className="text-lg font-semibold text-text">{title}</h2>
                 <button
                   onClick={onClose}
@@ -89,9 +89,11 @@ export function Modal({
                 </button>
               </div>
             )}
-            <div className="min-h-0 flex-1 overflow-y-auto px-6 py-5">{children}</div>
+            <div className="min-h-0 flex-1 overflow-y-auto px-4 py-4 sm:px-6 sm:py-5">
+              {children}
+            </div>
             {footer && (
-              <div className="flex items-center justify-end gap-3 border-t border-line/70 px-6 py-4">
+              <div className="flex items-center justify-end gap-2.5 border-t border-line/70 px-4 py-3 sm:gap-3 sm:px-6 sm:py-4">
                 {footer}
               </div>
             )}

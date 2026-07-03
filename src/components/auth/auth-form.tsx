@@ -31,7 +31,7 @@ export function AuthForm({ mode }: { mode: "login" | "register" }) {
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-      className="glass w-full max-w-md rounded-3xl p-7 sm:p-9"
+      className="glass w-full max-w-md rounded-3xl p-5 sm:p-9"
     >
       <div className="mb-7 flex flex-col items-center text-center">
         <span className="mb-4 grid size-14 place-items-center rounded-2xl bg-white/5 accent-ring">

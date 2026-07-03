@@ -17,7 +17,7 @@ export default async function AppLayout({
         <ImpersonationBanner username={ctx.impersonatedProfile.username} />
       )}
       <TopNav username={ctx.profile?.username ?? ""} isAdmin={ctx.isAdmin} />
-      <main className="mx-auto w-full max-w-6xl flex-1 px-4 pb-28 pt-6 sm:px-6">
+      <main className="mx-auto w-full max-w-6xl flex-1 px-3 pb-24 pt-4 sm:px-6 sm:pb-28 sm:pt-6">
         {children}
       </main>
     </div>

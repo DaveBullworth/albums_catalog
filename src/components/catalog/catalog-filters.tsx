@@ -2,16 +2,20 @@
 
 import { useCallback, useEffect, useRef, useState, useTransition } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { Search, ArrowDownUp, RotateCcw } from "lucide-react";
+import {
+  Search,
+  RotateCcw,
+  ArrowUpNarrowWide,
+  ArrowDownWideNarrow,
+} from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
-import { Spinner } from "@/components/ui/spinner";
 import { useI18n } from "@/components/providers/i18n-provider";
-import { cn } from "@/lib/utils";
 
 /**
- * All controls keep optimistic local state (they flip instantly) while the
- * server re-render happens inside a transition; a spinner shows while pending.
+ * Two-row layout: search fields + year range on top, toggles and sorting
+ * below. Controls flip optimistically; the server re-render runs inside a
+ * transition indicated by a slim progress line at the bottom of the block.
  */
 export function CatalogFilters() {
   const { t } = useI18n();
@@ -28,9 +32,15 @@ export function CatalogFilters() {
   const [favorite, setFavorite] = useState(sp.get("favorite") === "1");
   const [sort, setSort] = useState(sp.get("sort") ?? "recent");
   const [dir, setDir] = useState(sp.get("dir") ?? "");
-  const firstRun = useRef(true);
 
-  // Re-sync local state when the URL changes from outside (reset, back/forward).
+  // Latest URL params for the debounced comparison below — a ref so the
+  // debounce effect doesn't re-fire (and mis-push) on back/forward.
+  const spRef = useRef(sp);
+  useEffect(() => {
+    spRef.current = sp;
+  }, [sp]);
+
+  // Re-sync toggle state when the URL changes from outside (reset, history).
   useEffect(() => {
     setLiked(sp.get("liked") === "1");
     setFavorite(sp.get("favorite") === "1");
@@ -40,7 +50,7 @@ export function CatalogFilters() {
 
   const apply = useCallback(
     (patch: Record<string, string | null>) => {
-      const params = new URLSearchParams(sp.toString());
+      const params = new URLSearchParams(spRef.current.toString());
       for (const [k, v] of Object.entries(patch)) {
         if (v) params.set(k, v);
         else params.delete(k);
@@ -50,16 +60,21 @@ export function CatalogFilters() {
         router.push(`${pathname}?${params.toString()}`, { scroll: false });
       });
     },
-    [sp, pathname, router],
+    [pathname, router],
   );
 
-  // Debounced text inputs.
+  // Debounced text inputs. Only navigates when the values actually differ
+  // from the URL — this also keeps StrictMode's double effect run from
+  // triggering a phantom navigation on mount.
   useEffect(() => {
-    if (firstRun.current) {
-      firstRun.current = false;
-      return;
-    }
     const id = setTimeout(() => {
+      const cur = spRef.current;
+      const unchanged =
+        (cur.get("artist") ?? "") === artist &&
+        (cur.get("name") ?? "") === name &&
+        (cur.get("yearFrom") ?? "") === yearFrom &&
+        (cur.get("yearTo") ?? "") === yearTo;
+      if (unchanged) return;
       apply({
         artist: artist || null,
         name: name || null,
@@ -68,8 +83,7 @@ export function CatalogFilters() {
       });
     }, 350);
     return () => clearTimeout(id);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [artist, name, yearFrom, yearTo]);
+  }, [artist, name, yearFrom, yearTo, apply]);
 
   const effectiveDir =
     dir || (sort === "artist" || sort === "name" ? "asc" : "desc");
@@ -89,107 +103,125 @@ export function CatalogFilters() {
     startTransition(() => router.push(pathname, { scroll: false }));
   }
 
+  const DirIcon = effectiveDir === "asc" ? ArrowUpNarrowWide : ArrowDownWideNarrow;
+
   return (
-    <div className="glass flex flex-wrap items-center gap-2.5 rounded-2xl p-2.5">
-      <label className="relative min-w-40 flex-1">
-        <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-dim" />
-        <Input
-          value={artist}
-          onChange={(e) => setArtist(e.target.value)}
-          placeholder={t("filters.artist")}
-          className="h-10 pl-9"
-        />
-      </label>
-      <label className="relative min-w-40 flex-1">
-        <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-dim" />
-        <Input
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          placeholder={t("filters.album")}
-          className="h-10 pl-9"
-        />
-      </label>
+    <div className="glass relative overflow-hidden rounded-2xl p-3 sm:p-3.5">
+      <div className="flex flex-col gap-2.5">
+        {/* Row 1 — searches + year range */}
+        <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-[1fr_1fr_auto]">
+          <label className="relative">
+            <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-dim" />
+            <Input
+              value={artist}
+              onChange={(e) => setArtist(e.target.value)}
+              placeholder={t("filters.artist")}
+              className="h-10 pl-9"
+            />
+          </label>
+          <label className="relative">
+            <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-dim" />
+            <Input
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder={t("filters.album")}
+              className="h-10 pl-9"
+            />
+          </label>
+          <div className="flex items-center gap-1.5">
+            <Input
+              value={yearFrom}
+              onChange={(e) =>
+                /^\d{0,4}$/.test(e.target.value) && setYearFrom(e.target.value)
+              }
+              placeholder={t("filters.yearFrom")}
+              inputMode="numeric"
+              className="h-10 flex-1 text-center sm:w-16 sm:flex-none"
+            />
+            <span className="text-dim">–</span>
+            <Input
+              value={yearTo}
+              onChange={(e) =>
+                /^\d{0,4}$/.test(e.target.value) && setYearTo(e.target.value)
+              }
+              placeholder={t("filters.yearTo")}
+              inputMode="numeric"
+              className="h-10 flex-1 text-center sm:w-16 sm:flex-none"
+            />
+          </div>
+        </div>
 
-      <div className="flex items-center gap-1.5">
-        <Input
-          value={yearFrom}
-          onChange={(e) => /^\d{0,4}$/.test(e.target.value) && setYearFrom(e.target.value)}
-          placeholder={t("filters.yearFrom")}
-          inputMode="numeric"
-          className="h-10 w-16 text-center"
-        />
-        <span className="text-dim">–</span>
-        <Input
-          value={yearTo}
-          onChange={(e) => /^\d{0,4}$/.test(e.target.value) && setYearTo(e.target.value)}
-          placeholder={t("filters.yearTo")}
-          inputMode="numeric"
-          className="h-10 w-16 text-center"
-        />
+        {/* Row 2 — toggles left, sorting right */}
+        <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2.5">
+          <div className="flex items-center gap-4">
+            <Switch
+              checked={liked}
+              onChange={(v) => {
+                setLiked(v);
+                apply({ liked: v ? "1" : null });
+              }}
+              label={t("filters.onlyLiked")}
+            />
+            <Switch
+              checked={favorite}
+              onChange={(v) => {
+                setFavorite(v);
+                apply({ favorite: v ? "1" : null });
+              }}
+              label={t("filters.onlyFavorites")}
+            />
+          </div>
+
+          <div className="flex items-center gap-1.5">
+            <select
+              value={sort}
+              onChange={(e) => {
+                const v = e.target.value;
+                setSort(v);
+                setDir("");
+                apply({ sort: v === "recent" ? null : v, dir: null });
+              }}
+              className="h-9 rounded-xl border border-line bg-bg-2/60 px-2 text-sm text-text outline-none focus:border-accent/60"
+            >
+              <option value="recent">{t("filters.sortRecent")}</option>
+              <option value="year">{t("filters.sortYear")}</option>
+              <option value="artist">{t("filters.sortArtist")}</option>
+              <option value="name">{t("filters.sortName")}</option>
+            </select>
+            <button
+              onClick={() => {
+                const next = effectiveDir === "asc" ? "desc" : "asc";
+                setDir(next);
+                apply({ dir: next });
+              }}
+              className="inline-flex h-9 items-center gap-1.5 rounded-xl border border-line bg-bg-2/60 px-2.5 text-sm text-muted transition hover:text-text"
+              title={t(effectiveDir === "asc" ? "filters.asc" : "filters.desc")}
+            >
+              <DirIcon className="size-4" />
+              <span className="hidden md:inline">
+                {t(effectiveDir === "asc" ? "filters.asc" : "filters.desc")}
+              </span>
+            </button>
+            {hasFilters && (
+              <button
+                onClick={reset}
+                className="inline-flex h-9 items-center gap-1.5 rounded-xl px-2.5 text-sm text-muted transition hover:text-text"
+                title={t("filters.reset")}
+              >
+                <RotateCcw className="size-4" />
+                <span className="hidden md:inline">{t("filters.reset")}</span>
+              </button>
+            )}
+          </div>
+        </div>
       </div>
 
-      <div className="flex items-center gap-3 px-1">
-        <Switch
-          checked={liked}
-          onChange={(v) => {
-            setLiked(v);
-            apply({ liked: v ? "1" : null });
-          }}
-          label={t("filters.onlyLiked")}
-        />
-        <Switch
-          checked={favorite}
-          onChange={(v) => {
-            setFavorite(v);
-            apply({ favorite: v ? "1" : null });
-          }}
-          label={t("filters.onlyFavorites")}
-        />
-      </div>
-
-      <div className="flex items-center gap-1.5">
-        <select
-          value={sort}
-          onChange={(e) => {
-            const v = e.target.value;
-            setSort(v);
-            setDir("");
-            apply({ sort: v === "recent" ? null : v, dir: null });
-          }}
-          className="h-10 rounded-xl border border-line bg-bg-2/60 px-2.5 text-sm text-text outline-none focus:border-accent/60"
-        >
-          <option value="recent">{t("filters.sortRecent")}</option>
-          <option value="year">{t("filters.sortYear")}</option>
-          <option value="artist">{t("filters.sortArtist")}</option>
-          <option value="name">{t("filters.sortName")}</option>
-        </select>
-        <button
-          onClick={() => {
-            const next = effectiveDir === "asc" ? "desc" : "asc";
-            setDir(next);
-            apply({ dir: next });
-          }}
-          className="grid size-10 place-items-center rounded-xl border border-line bg-bg-2/60 text-muted transition hover:text-text"
-          title={effectiveDir}
-          aria-label="Toggle sort direction"
-        >
-          <ArrowDownUp
-            className={cn("size-4 transition", effectiveDir === "asc" && "rotate-180")}
-          />
-        </button>
-      </div>
-
-      {hasFilters && (
-        <button
-          onClick={reset}
-          className="inline-flex h-10 items-center gap-1.5 rounded-xl px-3 text-sm text-muted transition hover:text-text"
-        >
-          <RotateCcw className="size-4" />
-          {t("filters.reset")}
-        </button>
+      {/* slim progress line while the server re-renders */}
+      {isPending && (
+        <div className="absolute inset-x-0 bottom-0 h-0.5">
+          <div className="animate-progress h-full w-1/3 bg-gradient-to-r from-transparent via-accent to-transparent" />
+        </div>
       )}
-
-      {isPending && <Spinner className="size-4 text-accent" />}
     </div>
   );
 }

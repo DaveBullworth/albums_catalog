@@ -60,7 +60,7 @@ export default async function CatalogPage({
   );
 
   return (
-    <div className="flex flex-col gap-5">
+    <div className="flex flex-col gap-4 sm:gap-5">
       <CatalogHeading total={total} />
       <CatalogFilters />
       <CatalogBoard initialAlbums={albums} filtered={filtered} />
