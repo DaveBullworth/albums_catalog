@@ -1,350 +1,157 @@
-# 🎵 Albums Catalog
+# 🎵 Resonance
 
-A music album catalog with authentication, localization, palette extraction, animations, and more. Built on the **PERN** stack and fully containerized using Docker + Nginx.
+A personal, neon-lit catalogue of the albums you love. Import records from
+Spotify in one click, rate and review them, and keep your collection close —
+every card glowing with the dominant colour of its cover.
 
----
-
-## 🚀 Tech Stack
-
-![PERN Stack](https://miro.medium.com/v2/resize:fit:1100/format:webp/1*ptqverAyBpdfUDhrs2g_3A.jpeg)
-
-### 📦 Backend
-
-- **Node.js** + **Express.js**
-- **PostgreSQL** + **Sequelize**
-- **JWT Authentication**
-- **Localization:** `i18next`, `i18next-fs-backend`
-- **File Upload:** `express-fileupload`
-- **Rate Limiting** `express-rate-limit`
-- **Logging:** `winston`
-- **Environment Configuration:** `dotenv`
-
-### 🎨 Frontend
-
-- **React.js** + **Redux Toolkit**
-- **Routing:** `react-router-dom`
-- **Styling:** `Sass`, `Bootstrap`
-- **Animations:** `mojs`
-- **Color Palette Extraction:** `tinycolor2`, `colorthief`
-- **Localization:** `react-i18next`, `i18next-http-backend`
+This is a ground-up rebuild of the original PERN album catalogue (preserved in
+[`legacy/`](./legacy)) as a modern, free-to-host app.
 
 ---
 
-## 🎧 Spotify for Developers API
+## ✨ Features
 
-This project integrates with the **[Spotify Web API](https://developer.spotify.com/documentation/web-api/)** to retrieve album data, artist information, and cover art.
+- **Username-only auth** — no email required; each user gets their own catalogue.
+- **Spotify import** — paste an album link; covers, artists, year and the full
+  tracklist arrive instantly (Spotify Web API, Client-Credentials flow).
+- **Rate & review** — like/skip an album, star favourites, star individual
+  tracks, write a review.
+- **Filter, sort, paginate** — search by artist/album, filter by year range or
+  liked/favourites, sort by recency, year, artist or name. All URL-driven.
+- **Dynamic colour** — each album's accent is the dominant colour of its cover,
+  extracted server-side at import time.
+- **Admin panel** — list every user with album counts, promote/demote admins,
+  delete accounts, and **"enter as user"** impersonation to view and manage any
+  catalogue.
+- **RU / EN** internationalisation and a cohesive dark/neon design system.
 
-### 🔍 What is the Spotify Web API?
+## 🧱 Tech stack
 
-Spotify's Web API is a RESTful service that allows developers to access public and private Spotify content — such as albums, playlists, artists, and user profiles.
+| Layer | Choice |
+|------|--------|
+| Framework | **Next.js 16** (App Router, TypeScript) — frontend **and** backend in one repo |
+| Styling | **Tailwind CSS v4** + a custom design system, **Motion** for animation |
+| Database | **Supabase Postgres** (real Postgres, free tier) |
+| Auth | **Supabase Auth** + **Row Level Security** for per-user isolation |
+| Covers | Served straight from the **Spotify CDN** — never stored |
+| Colour | **sharp** (`stats().dominant`) at import time |
+| Hosting | **Vercel** (Hobby) + Supabase free — $0 |
 
-In this project, we use it primarily for:
-- Fetching album metadata
-- Retrieving high-resolution album covers
-- Querying artists and genres
-- Enhancing the catalog with real-time Spotify data
-
-### 🚀 How to get your own Spotify API credentials
-
-To use the Spotify API, you must register your application and obtain credentials (Client ID and Client Secret).
-
-1. Go to the official [Spotify Developer Dashboard](https://developer.spotify.com/dashboard)
-2. Log in with your Spotify account
-3. Click on **"Create an App"**
-4. Fill out app name and description
-5. After the app is created, you’ll get:
-   - **Client ID**
-   - **Client Secret**
-6. (Optional) Set a redirect URI if you need user authorization flows (not required for this project)
-
-### 🔐 How to use the credentials
-
-1. In your `.env` file (e.g., `server/.env`), add:
-
-   ```env
-   SPOTIFY_CLIENT_ID=your_client_id_here
-   SPOTIFY_CLIENT_SECRET=your_client_secret_here
-   ```
-
-2. In your backend code, exchange the credentials for an access token (using the Client Credentials Flow):
-
-   ```js
-   const auth = Buffer.from(`${clientId}:${clientSecret}`).toString('base64');
-   const { data } = await axios.post('https://accounts.spotify.com/api/token', 'grant_type=client_credentials', {
-     headers: {
-       Authorization: `Basic ${auth}`,
-       'Content-Type': 'application/x-www-form-urlencoded'
-     }
-   });
-   ```
-
-3. Use the access token to make requests to the Spotify API.
-
-### 📎 Resources
-
-- [Spotify Web API Docs](https://developer.spotify.com/documentation/web-api/)
-- [Authorization Guide](https://developer.spotify.com/documentation/web-api/tutorials/client-credentials-flow)
-- [Available Endpoints](https://developer.spotify.com/documentation/web-api/reference)
+There is **no separate backend service**: all server logic lives in Next.js
+Server Actions and Route Handlers, so there is exactly one app to deploy.
 
 ---
 
-⚠️ **Note:** Be mindful of Spotify’s rate limits. Avoid excessive requests, cache responses where appropriate, and handle expired tokens gracefully.
+## 🚀 Getting started
 
-## 🐳 Dockerized Architecture
+### 1. Create a Supabase project
 
-This app consists of four services:
+1. Create a project at [supabase.com](https://supabase.com).
+2. In **SQL Editor**, run the migration in
+   [`supabase/migrations/0001_init.sql`](./supabase/migrations/0001_init.sql).
+   This creates the `profiles`, `albums` and `tracks` tables, RLS policies, and
+   the signup trigger.
+3. In **Authentication → Providers → Email**, **disable "Confirm email"**.
+   Resonance uses a username-only flow backed by a synthetic internal email, so
+   there is no inbox to confirm.
+4. From **Project Settings → API**, copy the **Project URL**, the **anon**
+   public key, and the **service_role** key.
 
-- `client` — React SPA
-- `server` — Express API
-- `db` — PostgreSQL
-- `nginx` — Static hosting & reverse proxy
+### 2. Create a Spotify app
 
-```
-project-root/
-├── client/          # React frontend
-├── server/          # Node backend
-├── docker/
-│   ├── nginx/       # Nginx config
-│   ├── Dockerfile.client
-│   └── Dockerfile.server
-├── docker-compose.yml
-└── README.md
-```
+1. Go to the [Spotify Developer Dashboard](https://developer.spotify.com/dashboard).
+2. Create an app and copy its **Client ID** and **Client Secret**.
+   (No redirect URI is needed — we only use the Client-Credentials flow.)
 
-## 📦 Environment Variables
+### 3. Configure environment
 
-### Client (`client/.env`)
-```
-REACT_APP_API_URL=/api/
-```
-
-### Server (`server/.env`)
-```
-PORT=5000
-NODE_ENV=development
-API_BASE_URL=http://server:5000/api
-CLIENT_URL=http://client
-DB_NAME=Albums
-DB_USER=postgres
-DB_PASSWORD=postgres
-DB_HOST=db
-DB_PORT=5432
-JWT_SECRET=secretkey
-POSTGRES_PASSWORD=postgres
-```
-
-## 🚀 Running the App with Docker
-
-### 1. Clone the repository
-```
-git clone <repository_url>
-cd <repository_name>
-```
-
-### 2. Create `.env` files
-
-Fill in the required variables in:
-- `client/.env`
-- `server/.env`
-
-You can use the provided examples above.
-
-### 3. Build the React client manually (required before Docker)
-```
-npm --prefix client ci
-npm --prefix client run build
-```
-
-This creates the production-ready frontend inside `client/build`, which will be served by Nginx.
-
-### 4. Build and run containers
-```
-docker-compose up --build
-```
-
-The services:
-- Client: [http://localhost:3000](http://localhost:3000)
-- Server (proxied via nginx): [http://localhost/api](http://localhost/api)
-
-## 🛠 Scripts
-
-### 📦 Dependency Management
-
-Before running or building the project, it's recommended to install dependencies in a clean and reproducible way using `npm ci`:
-
-```
-npm --prefix client ci       # Install exact versions from client/package-lock.json
-npm --prefix server ci       # Install exact versions from server/package-lock.json
-```
-
-To ensure there are no stale or corrupted cached packages, you can optionally clear the npm cache beforehand:
-
-```
-npm cache clean --force
-```
-
-If you want to skip installing development dependencies on the server (e.g., in production), you can use:
-
-```
-npm --prefix server ci --omit=dev
-```
-
----
-
-### 🎨 Client Scripts (`client/`)
-```
-npm start         # Start React development server on localhost:3000
-npm run build     # Build optimized production bundle to client/build
-npm run format    # Format code with Prettier
-```
-
----
-
-### 🔧 Server Scripts (`server/`)
-```
-npm run dev       # Run Express server with nodemon for live reload
-npm run lint      # Run ESLint to check for lint issues
-npm run lint:fix  # Automatically fix lint issues
-npm run format    # Format server code using Prettier
-```
-
-
-## ⚙️ Technologies
-
-### Backend
-- Node.js
-- Express
-- PostgreSQL
-- Sequelize ORM
-- Winston (logging)
-- dotenv, cors, i18next, express-rate-limit
-
-### Frontend
-- React
-- Redux Toolkit
-- React Router DOM
-- Bootstrap + Bootstrap Icons
-- Axios
-- Sass
-- ColorThief, TinyColor2
-- Mo.js (animation)
-- i18next (internationalization)
-
-## 📁 Build Output
-
-After running `docker-compose up --build`, the structure will be:
-
-- `client` is served by `nginx` at `/`
-- API requests to `/api` are proxied to the `server` container
-
-## 🐳 Nginx Config
-
-Located in `docker/nginx/default.conf`:
-
-```nginx
-server {
-  listen 80;
-  server_name localhost;
-
-  location / {
-    root /usr/share/nginx/html;
-    index index.html index.htm;
-    try_files $uri /index.html;
-  }
-
-  location /api/ {
-    proxy_pass http://server:5000/;
-    proxy_http_version 1.1;
-    proxy_set_header Upgrade $http_upgrade;
-    proxy_set_header Connection 'upgrade';
-    proxy_set_header Host $host;
-    proxy_cache_bypass $http_upgrade;
-  }
-}
-```
-
-This handles frontend routing and proxies API calls.
-
-## 💾 Volumes
-
-Docker uses named volumes for PostgreSQL data persistence:
-
-```yaml
-volumes:
-  db_data:
-```
-
-These are automatically created and mounted to the container at:
-
-```
-/var/lib/postgresql/data
-```
-
-If you want to reset the database, remove the volume:
+Copy `.env.example` to `.env.local` and fill in the values:
 
 ```bash
-docker volume rm <project_name>_db_data
+cp .env.example .env.local
 ```
 
-Or prune all unused volumes:
+```env
+NEXT_PUBLIC_SUPABASE_URL=...
+NEXT_PUBLIC_SUPABASE_ANON_KEY=...
+SUPABASE_SERVICE_ROLE_KEY=...        # server only
+SPOTIFY_CLIENT_ID=...
+SPOTIFY_CLIENT_SECRET=...
+IMPERSONATION_SECRET=...             # `openssl rand -hex 32`
+```
+
+### 4. Run
 
 ```bash
-docker volume prune
+npm install
+npm run dev
 ```
 
-## 📂 Logs
+Open [http://localhost:3000](http://localhost:3000), register a user, and start
+pasting Spotify links.
 
-Server logs are stored in:
+### 5. Make yourself an admin
 
-```
-server/logs/
-```
+Register normally, then in the Supabase SQL Editor:
 
-This folder is mounted into the container and managed by Winston logger. Log files can include `error.log`, `combined.log`, or custom-defined logs.
-
-## ❓ FAQ
-
-### 🔹 Why am I getting `ERR_NAME_NOT_RESOLVED` or `network error`?
-
-This usually means:
-- You're accessing the server by internal Docker name (e.g., `http://server:5000`) **outside** the container.
-- **Fix**: Access everything via Nginx (`http://localhost`) and use relative API paths (`/api/...`) from the frontend.
-
-### 🔹 Why use `/api` in `REACT_APP_API_URL`?
-
-Nginx is set up to proxy any request to `/api` to the backend container. This avoids hardcoding internal container names and simplifies deployments.
-
-### 🔹 How do I rebuild everything from scratch?
-
-```bash
-docker-compose down -v --remove-orphans
-docker-compose up --build
+```sql
+update public.profiles set role = 'admin' where username = 'your_username';
 ```
 
-### 🔹 How do I access PostgreSQL manually?
-
-You can connect to the DB container:
-
-```bash
-docker exec -it <container_name> psql -U postgres
-```
-
-Or via GUI tools using:
-- Host: `localhost`
-- Port: `5432`
-- User: `postgres`
-- Password: from `.env`
-
-### 🔹 How do I format code?
-
-```bash
-npm run format
-```
-
-Available in both `client/` and `server/`.
+Reload — the **Admin** link appears in the nav.
 
 ---
 
-Feel free to contribute or open an issue!
+## ☁️ Deploy to Vercel (free)
 
+1. Push this repo to GitHub.
+2. On [vercel.com/new](https://vercel.com/new), import the repository.
+   Vercel auto-detects Next.js — no build config needed.
+3. Add the same environment variables from `.env.local` in
+   **Project → Settings → Environment Variables**.
+4. Deploy. That's it — the app and its API run as Vercel serverless functions;
+   the database lives in Supabase.
 
+> The Supabase free tier and Vercel Hobby tier are enough to run this for
+> personal use at no cost.
+
+---
+
+## 🗂️ Project structure
+
+```
+src/
+├── app/
+│   ├── (auth)/            # login, register, auth server actions
+│   ├── (app)/             # authenticated shell (nav + impersonation banner)
+│   │   ├── catalog/       # catalogue page + album server actions
+│   │   ├── account/       # account settings
+│   │   └── admin/         # user administration + impersonation actions
+│   ├── layout.tsx         # fonts, providers, locale
+│   └── page.tsx           # public landing (redirects to /catalog if signed in)
+├── components/            # ui kit, catalogue, admin, brand, providers
+├── lib/
+│   ├── supabase/          # browser / server / service-role clients + session
+│   ├── auth.ts            # auth context + impersonation resolver
+│   ├── spotify.ts         # Spotify Web API client
+│   ├── color.ts           # dominant-colour extraction (sharp)
+│   ├── queries.ts         # catalogue reads
+│   └── validation.ts      # zod schemas
+├── proxy.ts               # session refresh + route protection (Next 16 proxy)
+└── supabase/migrations/   # database schema + RLS
+```
+
+## 🔐 How a few things work
+
+- **Per-user isolation** is enforced at the database by Row Level Security, not
+  just in code. Admins can read any catalogue via an `is_admin()` policy.
+- **Impersonation** stores a signed, http-only cookie holding the target user's
+  id. The admin's own session stays intact; catalogue access is re-scoped to the
+  impersonated user via the service-role client, with a persistent exit banner.
+- **Covers** are referenced by their Spotify CDN URL and never copied, so there
+  is no file storage to manage or pay for.
+
+## 🏛️ Legacy
+
+The original Dockerised PERN implementation lives in [`legacy/`](./legacy) for
+reference. It is not part of the build.
