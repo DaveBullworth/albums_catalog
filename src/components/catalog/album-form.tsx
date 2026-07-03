@@ -6,6 +6,7 @@ import { useI18n } from "@/components/providers/i18n-provider";
 import { useToast } from "@/components/providers/toast-provider";
 import { Modal } from "@/components/ui/modal";
 import { Button } from "@/components/ui/button";
+import { Spinner } from "@/components/ui/spinner";
 import { Input, Textarea } from "@/components/ui/input";
 import { Field } from "@/components/ui/field";
 import { LikeToggle, FavToggle } from "./rating-toggles";
@@ -78,11 +79,14 @@ export function AlbumForm({
   open,
   onClose,
   initial,
+  tracksLoading = false,
   onSaved,
 }: {
   open: boolean;
   onClose: () => void;
   initial?: AlbumWithTracks | null;
+  /** True while the tracklist of the edited album is still being fetched. */
+  tracksLoading?: boolean;
   onSaved: () => void;
 }) {
   const { t } = useI18n();
@@ -118,14 +122,36 @@ export function AlbumForm({
   const accent = form.dominantColor ?? "var(--color-accent)";
 
   // Reset whenever the modal (re)opens for a different album.
-  useEffect(() => {
-    if (open) {
+  // Seed the form when the modal opens or switches to a different album, and
+  // merge the tracklist when it streams in later — as render-phase state
+  // adjustments (React's "you might not need an effect"): no cascading
+  // effect renders, and late tracks never reset fields the user can see.
+  const seedKey = open ? (initial?.id ?? "new") : null;
+  const [seededKey, setSeededKey] = useState<string | null>(null);
+  const [tracksSeededKey, setTracksSeededKey] = useState<string | null>(null);
+  if (seededKey !== seedKey) {
+    setSeededKey(seedKey);
+    setTracksSeededKey(
+      initial && initial.tracks.length === 0 ? null : seedKey,
+    );
+    if (seedKey !== null) {
       setForm(buildState(initial));
       setDirty(false);
       setLink("");
       setConfirmClose(false);
     }
-  }, [open, initial]);
+  } else if (open && initial && initial.tracks.length > 0 && tracksSeededKey !== seedKey) {
+    setTracksSeededKey(seedKey);
+    setForm((prev) => ({
+      ...prev,
+      tracks: initial.tracks.map((tr) => ({
+        position: tr.position,
+        name: tr.name,
+        spotifyUrl: tr.spotify_url,
+        starred: tr.starred,
+      })),
+    }));
+  }
 
   function patch(p: Partial<FormState>) {
     setForm((prev) => ({ ...prev, ...p }));
@@ -386,10 +412,16 @@ export function AlbumForm({
           {/* Tracks */}
           <div>
             <div className="mb-2 flex items-center justify-between">
-              <p className="text-xs font-semibold uppercase tracking-wide text-dim">
+              <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-dim">
                 {t("form.tracks")}
+                {tracksLoading && <Spinner className="size-3.5" />}
               </p>
-              <Button variant="subtle" size="sm" onClick={addTrack}>
+              <Button
+                variant="subtle"
+                size="sm"
+                onClick={addTrack}
+                disabled={tracksLoading}
+              >
                 <Plus className="size-4" /> {t("form.addTrack")}
               </Button>
             </div>

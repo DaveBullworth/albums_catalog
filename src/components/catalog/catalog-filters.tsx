@@ -1,6 +1,13 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState, useTransition } from "react";
+import {
+  useCallback,
+  useEffect,
+  useOptimistic,
+  useRef,
+  useState,
+  useTransition,
+} from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import {
   Search,
@@ -24,14 +31,22 @@ export function CatalogFilters() {
   const sp = useSearchParams();
   const [isPending, startTransition] = useTransition();
 
+  // Text inputs are genuine local state (typing), applied to the URL after a
+  // debounce below.
   const [artist, setArtist] = useState(sp.get("artist") ?? "");
   const [name, setName] = useState(sp.get("name") ?? "");
   const [yearFrom, setYearFrom] = useState(sp.get("yearFrom") ?? "");
   const [yearTo, setYearTo] = useState(sp.get("yearTo") ?? "");
-  const [liked, setLiked] = useState(sp.get("liked") === "1");
-  const [favorite, setFavorite] = useState(sp.get("favorite") === "1");
-  const [sort, setSort] = useState(sp.get("sort") ?? "recent");
-  const [dir, setDir] = useState(sp.get("dir") ?? "");
+
+  // Toggles and sorting are the URL itself, wrapped in useOptimistic so they
+  // flip instantly and rebase automatically when navigation lands — no local
+  // copies, no URL→state sync effect.
+  const [liked, setLikedOptimistic] = useOptimistic(sp.get("liked") === "1");
+  const [favorite, setFavoriteOptimistic] = useOptimistic(
+    sp.get("favorite") === "1",
+  );
+  const [sort, setSortOptimistic] = useOptimistic(sp.get("sort") ?? "recent");
+  const [dir, setDirOptimistic] = useOptimistic(sp.get("dir") ?? "");
 
   // Latest URL params for the debounced comparison below — a ref so the
   // debounce effect doesn't re-fire (and mis-push) on back/forward.
@@ -40,16 +55,8 @@ export function CatalogFilters() {
     spRef.current = sp;
   }, [sp]);
 
-  // Re-sync toggle state when the URL changes from outside (reset, history).
-  useEffect(() => {
-    setLiked(sp.get("liked") === "1");
-    setFavorite(sp.get("favorite") === "1");
-    setSort(sp.get("sort") ?? "recent");
-    setDir(sp.get("dir") ?? "");
-  }, [sp]);
-
   const apply = useCallback(
-    (patch: Record<string, string | null>) => {
+    (patch: Record<string, string | null>, optimistic?: () => void) => {
       const params = new URLSearchParams(spRef.current.toString());
       for (const [k, v] of Object.entries(patch)) {
         if (v) params.set(k, v);
@@ -57,6 +64,7 @@ export function CatalogFilters() {
       }
       params.delete("page");
       startTransition(() => {
+        optimistic?.();
         router.push(`${pathname}?${params.toString()}`, { scroll: false });
       });
     },
@@ -96,11 +104,13 @@ export function CatalogFilters() {
     setName("");
     setYearFrom("");
     setYearTo("");
-    setLiked(false);
-    setFavorite(false);
-    setSort("recent");
-    setDir("");
-    startTransition(() => router.push(pathname, { scroll: false }));
+    startTransition(() => {
+      setLikedOptimistic(false);
+      setFavoriteOptimistic(false);
+      setSortOptimistic("recent");
+      setDirOptimistic("");
+      router.push(pathname, { scroll: false });
+    });
   }
 
   const DirIcon = effectiveDir === "asc" ? ArrowUpNarrowWide : ArrowDownWideNarrow;
@@ -156,18 +166,18 @@ export function CatalogFilters() {
           <div className="flex items-center gap-4">
             <Switch
               checked={liked}
-              onChange={(v) => {
-                setLiked(v);
-                apply({ liked: v ? "1" : null });
-              }}
+              onChange={(v) =>
+                apply({ liked: v ? "1" : null }, () => setLikedOptimistic(v))
+              }
               label={t("filters.onlyLiked")}
             />
             <Switch
               checked={favorite}
-              onChange={(v) => {
-                setFavorite(v);
-                apply({ favorite: v ? "1" : null });
-              }}
+              onChange={(v) =>
+                apply({ favorite: v ? "1" : null }, () =>
+                  setFavoriteOptimistic(v),
+                )
+              }
               label={t("filters.onlyFavorites")}
             />
           </div>
@@ -177,9 +187,10 @@ export function CatalogFilters() {
               value={sort}
               onChange={(e) => {
                 const v = e.target.value;
-                setSort(v);
-                setDir("");
-                apply({ sort: v === "recent" ? null : v, dir: null });
+                apply({ sort: v === "recent" ? null : v, dir: null }, () => {
+                  setSortOptimistic(v);
+                  setDirOptimistic("");
+                });
               }}
               className="h-9 rounded-xl border border-line bg-bg-2/60 px-2 text-sm text-text outline-none focus:border-accent/60"
             >
@@ -191,8 +202,7 @@ export function CatalogFilters() {
             <button
               onClick={() => {
                 const next = effectiveDir === "asc" ? "desc" : "asc";
-                setDir(next);
-                apply({ dir: next });
+                apply({ dir: next }, () => setDirOptimistic(next));
               }}
               className="inline-flex h-9 items-center gap-1.5 rounded-xl border border-line bg-bg-2/60 px-2.5 text-sm text-muted transition hover:text-text"
               title={t(effectiveDir === "asc" ? "filters.asc" : "filters.desc")}

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useSyncExternalStore } from "react";
 import { createPortal } from "react-dom";
 import { AnimatePresence, motion } from "motion/react";
 import { X } from "lucide-react";
@@ -12,6 +12,8 @@ const SIZES = {
   lg: "max-w-2xl",
   xl: "max-w-4xl",
 } as const;
+
+const subscribeNoop = () => () => {};
 
 export function Modal({
   open,
@@ -32,8 +34,13 @@ export function Modal({
   dismissable?: boolean;
   className?: string;
 }) {
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => setMounted(true), []);
+  // SSR gate for the portal: false on the server render, true on the client
+  // — via useSyncExternalStore instead of a setState-in-effect mount flag.
+  const mounted = useSyncExternalStore(
+    subscribeNoop,
+    () => true,
+    () => false,
+  );
 
   useEffect(() => {
     if (!open) return;

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useTransition } from "react";
+import { useOptimistic, useTransition } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Spinner } from "@/components/ui/spinner";
@@ -17,26 +17,25 @@ export function Pagination({
   const pathname = usePathname();
   const sp = useSearchParams();
   const [isPending, startTransition] = useTransition();
-  const [target, setTarget] = useState<number | null>(null);
-
-  // Clear the in-flight marker once the new page has rendered.
-  useEffect(() => setTarget(null), [page]);
+  // The highlighted page moves instantly and rebases to the real page once
+  // navigation lands — no local state, no effect.
+  const [currentPage, setOptimisticPage] = useOptimistic(page);
 
   if (pageCount <= 1) return null;
 
   function go(p: number) {
-    setTarget(p);
     const params = new URLSearchParams(sp.toString());
     if (p <= 1) params.delete("page");
     else params.set("page", String(p));
     startTransition(() => {
+      setOptimisticPage(p);
       router.push(`${pathname}?${params.toString()}`, { scroll: true });
     });
   }
 
-  // Windowed page numbers around the current page.
+  // Windowed page numbers around the (optimistic) current page.
   const pages: number[] = [];
-  const start = Math.max(1, page - 2);
+  const start = Math.max(1, currentPage - 2);
   const end = Math.min(pageCount, start + 4);
   for (let i = Math.max(1, end - 4); i <= end; i++) pages.push(i);
 
@@ -46,8 +45,8 @@ export function Pagination({
   return (
     <nav className="flex items-center justify-center gap-1.5 pt-2">
       <button
-        onClick={() => go(page - 1)}
-        disabled={page <= 1 || isPending}
+        onClick={() => go(currentPage - 1)}
+        disabled={currentPage <= 1 || isPending}
         className={cn(btn, "border-line bg-surface/50 text-muted hover:text-text")}
         aria-label="Previous page"
       >
@@ -60,17 +59,17 @@ export function Pagination({
           disabled={isPending}
           className={cn(
             btn,
-            p === page
+            p === currentPage
               ? "border-transparent bg-accent font-semibold text-white shadow-[0_8px_24px_-10px_var(--color-accent)]"
               : "border-line bg-surface/50 text-muted hover:text-text",
           )}
         >
-          {isPending && target === p ? <Spinner className="size-4" /> : p}
+          {isPending && p === currentPage ? <Spinner className="size-4" /> : p}
         </button>
       ))}
       <button
-        onClick={() => go(page + 1)}
-        disabled={page >= pageCount || isPending}
+        onClick={() => go(currentPage + 1)}
+        disabled={currentPage >= pageCount || isPending}
         className={cn(btn, "border-line bg-surface/50 text-muted hover:text-text")}
         aria-label="Next page"
       >

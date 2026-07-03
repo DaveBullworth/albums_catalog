@@ -1,7 +1,6 @@
 "use client";
 
-import { useEffect, useState, useTransition } from "react";
-import { useRouter } from "next/navigation";
+import { useOptimistic, useState, useTransition } from "react";
 import { Plus, Disc3 } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import { AlbumCard } from "./album-card";
@@ -19,6 +18,10 @@ import {
 } from "@/app/(app)/catalog/actions";
 import type { Album, AlbumWithTracks } from "@/lib/types";
 
+type AlbumsAction =
+  | { type: "toggle"; id: string; field: "liked" | "favorite"; value: boolean }
+  | { type: "remove"; id: string };
+
 export function CatalogBoard({
   initialAlbums,
   filtered,
@@ -28,73 +31,86 @@ export function CatalogBoard({
 }) {
   const { t } = useI18n();
   const { toast } = useToast();
-  const router = useRouter();
+  const [, startTransition] = useTransition();
 
-  const [albums, setAlbums] = useState(initialAlbums);
-  useEffect(() => setAlbums(initialAlbums), [initialAlbums]);
+  // Optimistic view over the server-provided list: flips/removals show
+  // instantly and rebase automatically once revalidatePath streams fresh
+  // data back — no local copy of props, no sync effect.
+  const [albums, mutateAlbums] = useOptimistic(
+    initialAlbums,
+    (state: Album[], action: AlbumsAction): Album[] => {
+      switch (action.type) {
+        case "toggle":
+          return state.map((a) =>
+            a.id === action.id ? { ...a, [action.field]: action.value } : a,
+          );
+        case "remove":
+          return state.filter((a) => a.id !== action.id);
+      }
+    },
+  );
 
   const [detail, setDetail] = useState<AlbumWithTracks | null>(null);
   const [detailOpen, setDetailOpen] = useState(false);
   const [formOpen, setFormOpen] = useState(false);
   const [editing, setEditing] = useState<AlbumWithTracks | null>(null);
+  const [editTracksLoading, setEditTracksLoading] = useState(false);
   const [deleting, setDeleting] = useState<Album | null>(null);
-  const [, startTx] = useTransition();
 
   async function openDetail(a: Album) {
     setDetail(null);
     setDetailOpen(true);
     setDetail(await loadAlbumAction(a.id));
   }
+
   async function openEdit(a: Album) {
-    // Open instantly with the data the card already has; tracks stream in
-    // right after (the form re-seeds itself when the full album arrives).
+    // Open instantly with the data the card already has; only the tracklist
+    // is fetched, and it merges into the form without reseeding the fields.
     setEditing({ ...a, tracks: [] });
+    setEditTracksLoading(true);
     setFormOpen(true);
     const full = await loadAlbumAction(a.id);
-    if (full) setEditing(full);
+    setEditing((prev) => (prev && prev.id === a.id && full ? full : prev));
+    setEditTracksLoading(false);
   }
+
   function openAdd() {
     setEditing(null);
     setFormOpen(true);
   }
+
   function onSaved() {
+    // The create/update actions revalidate /catalog; fresh data streams in.
     setFormOpen(false);
     setEditing(null);
-    router.refresh();
   }
 
   function toggle(a: Album, field: "liked" | "favorite") {
     const value = !a[field];
-    setAlbums((prev) =>
-      prev.map((x) => (x.id === a.id ? { ...x, [field]: value } : x)),
-    );
-    startTx(async () => {
+    startTransition(async () => {
+      mutateAlbums({ type: "toggle", id: a.id, field, value });
       const res = await toggleAlbumFlag(a.id, field, value);
-      if (res.error) {
-        toast({ variant: "error", title: t("toast.error") });
-        setAlbums((prev) =>
-          prev.map((x) => (x.id === a.id ? { ...x, [field]: !value } : x)),
-        );
-      }
+      if (res.error) toast({ variant: "error", title: t("toast.error") });
     });
   }
 
-  async function confirmDelete() {
+  function confirmDelete() {
     if (!deleting) return;
     const target = deleting;
     setDeleting(null);
-    setAlbums((prev) => prev.filter((x) => x.id !== target.id));
-    const res = await deleteAlbumAction(target.id);
-    if (res.error) {
-      toast({ variant: "error", title: t("toast.error") });
-    } else {
-      toast({
-        variant: "success",
-        title: t("toast.deleted"),
-        body: `${target.artist} — ${target.name}`,
-      });
-    }
-    router.refresh();
+    startTransition(async () => {
+      mutateAlbums({ type: "remove", id: target.id });
+      const res = await deleteAlbumAction(target.id);
+      if (res.error) {
+        toast({ variant: "error", title: t("toast.error") });
+      } else {
+        toast({
+          variant: "success",
+          title: t("toast.deleted"),
+          body: `${target.artist} — ${target.name}`,
+        });
+      }
+    });
   }
 
   return (
@@ -167,6 +183,7 @@ export function CatalogBoard({
           setEditing(null);
         }}
         initial={editing}
+        tracksLoading={editTracksLoading}
         onSaved={onSaved}
       />
 
