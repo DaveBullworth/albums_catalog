@@ -46,11 +46,12 @@ export function CatalogBoard({
     setDetail(await loadAlbumAction(a.id));
   }
   async function openEdit(a: Album) {
+    // Open instantly with the data the card already has; tracks stream in
+    // right after (the form re-seeds itself when the full album arrives).
+    setEditing({ ...a, tracks: [] });
+    setFormOpen(true);
     const full = await loadAlbumAction(a.id);
-    if (full) {
-      setEditing(full);
-      setFormOpen(true);
-    }
+    if (full) setEditing(full);
   }
   function openAdd() {
     setEditing(null);
